@@ -1,0 +1,10 @@
+framework module AlertPresenter {
+  umbrella header "AlertPresenter.h"
+
+  export *
+  module * { export * }
+}
+
+module AlertPresenter.Swift {
+    header "AlertPresenter-Swift.h"
+}

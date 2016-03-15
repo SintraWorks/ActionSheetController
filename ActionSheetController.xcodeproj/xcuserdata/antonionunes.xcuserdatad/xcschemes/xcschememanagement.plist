@@ -9,6 +9,11 @@
 			<key>orderHint</key>
 			<integer>0</integer>
 		</dict>
+		<key>ActionSheetControllerDemo.xcscheme</key>
+		<dict>
+			<key>orderHint</key>
+			<integer>1</integer>
+		</dict>
 	</dict>
 	<key>SuppressBuildableAutocreation</key>
 	<dict>
@@ -18,6 +23,21 @@
 			<true/>
 		</dict>
 		<key>6D59585A1C96D7CC0022D616</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>6D5958741C96DA2C0022D616</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>6D5958871C96DA2C0022D616</key>
+		<dict>
+			<key>primary</key>
+			<true/>
+		</dict>
+		<key>6D5958921C96DA2C0022D616</key>
 		<dict>
 			<key>primary</key>
 			<true/>

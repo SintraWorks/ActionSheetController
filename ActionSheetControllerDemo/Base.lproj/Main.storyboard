@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="9532" systemVersion="15D21" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" initialViewController="TKb-P4-lGx">
+    <dependencies>
+        <deployment identifier="iOS"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="9530"/>
+    </dependencies>
+    <scenes>
+        <!--Controller-->
+        <scene sceneID="Fes-GJ-8cY">
+            <objects>
+                <tableViewController id="TKb-P4-lGx" customClass="ViewController" customModule="ActionSheetControllerDemo" customModuleProvider="target" sceneMemberID="viewController">
+                    <tableView key="view" clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" id="vGB-4c-4ZY">
+                        <rect key="frame" x="0.0" y="0.0" width="600" height="600"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
+                        <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                        <prototypes>
+                            <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" selectionStyle="default" indentationWidth="10" reuseIdentifier="Cell" id="2zy-G4-c51">
+                                <rect key="frame" x="0.0" y="28" width="600" height="44"/>
+                                <autoresizingMask key="autoresizingMask"/>
+                                <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" tableViewCell="2zy-G4-c51" id="SvE-nr-d5h">
+                                    <rect key="frame" x="0.0" y="0.0" width="600" height="43.5"/>
+                                    <autoresizingMask key="autoresizingMask"/>
+                                </tableViewCellContentView>
+                            </tableViewCell>
+                        </prototypes>
+                        <connections>
+                            <outlet property="dataSource" destination="QR3-H6-a9B" id="bVM-HE-dWO"/>
+                            <outlet property="delegate" destination="dbm-Dk-dQv" id="gSS-Da-1Pj"/>
+                        </connections>
+                    </tableView>
+                </tableViewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="Nci-jN-n70" userLabel="First Responder" sceneMemberID="firstResponder"/>
+                <customObject id="dbm-Dk-dQv" userLabel="TableViewDelegate" customClass="TableViewDelegate" customModule="ActionSheetControllerDemo" customModuleProvider="target">
+                    <connections>
+                        <outlet property="controller" destination="TKb-P4-lGx" id="5pn-yi-YuR"/>
+                    </connections>
+                </customObject>
+                <customObject id="QR3-H6-a9B" userLabel="TableViewDataSource" customClass="TableViewDataSource" customModule="ActionSheetControllerDemo" customModuleProvider="target"/>
+            </objects>
+            <point key="canvasLocation" x="650" y="727"/>
+        </scene>
+    </scenes>
+</document>
