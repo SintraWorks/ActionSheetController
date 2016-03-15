@@ -38,6 +38,8 @@ class TableViewDelegate: NSObject {
             sheetController = self.noBackgroundTapsSheet()
         case .GroupedActions:
             sheetController = self.groupedActionsSheet()
+        case .GroupedActionsBlack:
+            sheetController = self.groupedActionsSheet(.Black)
         }
         
         self.controller.presentViewController(sheetController, animated: true, completion: nil)
@@ -88,7 +90,7 @@ extension TableViewDelegate {
     }
     
     
-    private func groupedActionsSheet() -> ActionSheetController {
+    private func groupedActionsSheet(style: ActionSheetControllerStyle = .White) -> ActionSheetController {
         let okAction = ActionSheetControllerAction(style: .Done, title: "OK", dismissesActionController: true ) { _ in
             AudioServicesPlaySystemSound(1103)
             let speechsynth = AVSpeechSynthesizer()
@@ -97,7 +99,7 @@ extension TableViewDelegate {
             speechsynth.speakUtterance(speech)
         }
         let cancelAction = ActionSheetControllerAction(style: .Cancel, title: "Cancel", dismissesActionController: true, handler: nil)
-        let sheetController = ActionSheetController(title: "Hi there", message: "I have scores of grouped actions. Ok, well, not scores, but still…\n\nThe Alert Gun fires several alerts in rapid sucession. As you dismiss each alert, the next is shown.", cancelAction: cancelAction, okAction: okAction)
+        let sheetController = ActionSheetController(style: style, title: "Hi there", message: "I have scores of grouped actions. Ok, well, not scores, but still…\n\nThe Alert Gun fires several alerts in rapid sucession. As you dismiss each alert, the next is shown.", cancelAction: cancelAction, okAction: okAction)
         
         let action1 = ActionSheetControllerAction(style: .Done, title: "Action 1", dismissesActionController: false) { controller in
             let action = AlertAction(title: "Hit me", style: .Default, enabled: true, isPreferredAction: true, handler: nil)
@@ -135,6 +137,13 @@ extension TableViewDelegate {
         label.text = "I'm not a button. I'm the content view.."
         label.textAlignment = .Center
         label.adjustsFontSizeToFitWidth = true
+        
+        if style == .Black {
+            label.textColor = UIColor.lightTextColor()
+        } else {
+            label.textColor = UIColor.darkTextColor()
+        }
+        
         return sheetController
    
     }

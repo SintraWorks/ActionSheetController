@@ -10,7 +10,7 @@ import UIKit
 
 
 enum RowIdentifier: Int {
-    case CustomView, BlackCustomView, DatePickerView, TransparentBackground, NoBackgroundTaps, GroupedActions
+    case CustomView, BlackCustomView, DatePickerView, TransparentBackground, NoBackgroundTaps, GroupedActions, GroupedActionsBlack
     
     func description() -> String {
         switch self {
@@ -26,11 +26,13 @@ enum RowIdentifier: Int {
             return "No Background Taps"
         case GroupedActions:
             return "Grouped Actions"
+        case GroupedActionsBlack:
+            return "Grouped Actions Black"
         }
     }
     
     static var count: Int = {
-        return GroupedActions.rawValue + 1 }()
+        return GroupedActionsBlack.rawValue + 1 }()
 }
 
 
