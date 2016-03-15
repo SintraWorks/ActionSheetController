@@ -21,31 +21,31 @@ Lets say you want to add a date picker:
 
 ```swift
 private func datePickerSheet() -> ActionSheetController {
-let pickerView = UIDatePicker(frame: CGRectZero)
+        let pickerView = UIDatePicker(frame: CGRectZero)
 
-let okAction = ActionSheetControllerAction(style: .Done, title: "OK", dismissesActionController: true) { controller in
-let date = pickerView.date
-let action = AlertAction(title: "Hurray!", style: .Default, enabled: true, isPreferredAction: true) {
-print("Dismissed!")
-}
-let alertInfo = AlertInfo(title: "Success", message: "You picked date: \(date.description)", actions: [action])
-AlertPresenter.sharedAlertPresenter.addAlert(alertInfo)
-}
-
-let cancelAction = ActionSheetControllerAction(style: .Cancel, title: "Cancel", dismissesActionController: true, handler: nil)
-let sheetController = ActionSheetController(title: "Date Picker", message: "Pick a date for your enjoyment…", cancelAction: cancelAction, okAction: okAction)
-
-sheetController.contentView = pickerView
-
-return sheetController
-}
+        let okAction = ActionSheetControllerAction(style: .Done, title: "OK", dismissesActionController: true) { controller in
+            let date = pickerView.date
+            let action = AlertAction(title: "Hurray!", style: .Default, enabled: true, isPreferredAction: true) {
+                print("Dismissed!")
+            }
+            let alertInfo = AlertInfo(title: "Success", message: "You picked date: \(date.description)", actions: [action])
+            AlertPresenter.sharedAlertPresenter.addAlert(alertInfo)
+        }
+        
+        let cancelAction = ActionSheetControllerAction(style: .Cancel, title: "Cancel", dismissesActionController: true, handler: nil)
+        let sheetController = ActionSheetController(title: "Date Picker", message: "Pick a date for your enjoyment…", cancelAction: cancelAction, okAction: okAction)
+        
+        sheetController.contentView = pickerView
+        
+        return sheetController
+    }
 ```
 ###Presenting
 Presenting the controller is pretty standard:
 
 ```swift
-var sheetController = self.datePickerSheet()
-self.controller.presentViewController(sheetController, animated: true, completion: nil)
+        var sheetController = self.datePickerSheet()
+        self.controller.presentViewController(sheetController, animated: true, completion: nil)
 ```
 
 ###Presentation Style
