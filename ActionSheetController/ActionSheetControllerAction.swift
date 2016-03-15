@@ -5,6 +5,23 @@
 //  Created by Antonio Nunes on 14/03/16.
 //  Copyright © 2016 SintraWorks. All rights reserved.
 //
+//  Permission is hereby granted, free of charge, to any person obtaining a copy
+//  of this software and associated documentation files (the "Software"), to deal
+//  in the Software without restriction, including without limitation the rights
+//  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//  copies of the Software, and to permit persons to whom the Software is
+//  do so, subject to the following conditions:
+//
+//  The above copyright notice and this permission notice shall be included in
+//  all copies or substantial portions of the Software.
+//
+//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+//  THE SOFTWARE.
 
 import UIKit
 
@@ -25,6 +42,7 @@ public enum ActionSheetControllerActionStyle {
 
 // MARK: - Individual Actions
 
+/// A block of code to be executed when the action is activated.
 public typealias ActionSheetControllerActionHandler = (ActionSheetController) -> ()
 
 /// An ActionSheetControllerAction instance represents an action on the ActionSheetController that can be tapped by the user.
@@ -33,7 +51,7 @@ public typealias ActionSheetControllerActionHandler = (ActionSheetController) ->
 public class ActionSheetControllerAction {
     /// The action's title
     var title: String?
-    /// The action's image
+    /// The action's image. It will not be shown if the action also has a title.
     public var image: UIImage?
     /// The action's style
     var style: ActionSheetControllerActionStyle = .Done
@@ -44,7 +62,9 @@ public class ActionSheetControllerAction {
     
     var controller: ActionSheetController?
     
-    
+    /// Provide at least a title or an image. (But not both. The title overrides the image.)
+    /// If you want the action to dismiss the controller when clicked set dismissesActionController to true.
+    ///
     public init(style: ActionSheetControllerActionStyle = .Done, title: String? = nil, image: UIImage? = nil, dismissesActionController: Bool = false, handler:ActionSheetControllerActionHandler? = nil) {
         self.style = style
         self.title = title
@@ -167,7 +187,7 @@ public class GroupedActionSheetControllerAction: ActionSheetControllerAction {
     /// The grouped actions of the ActionControllerGroupedAction.
     var actions: [ActionSheetControllerAction] = []
     
-    
+    /// Pass in the action style, and an array of actions to be shown on a single row.
     public init(style: ActionSheetControllerActionStyle, actions: [ActionSheetControllerAction]) {
         super.init(style: style, title: nil, dismissesActionController: false, handler: nil)
         self.style = style

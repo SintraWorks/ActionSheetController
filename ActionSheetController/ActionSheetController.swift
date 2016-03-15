@@ -5,6 +5,23 @@
 //  Created by Antonio Nunes on 21/02/16.
 //  Copyright © 2016 SintraWorks. All rights reserved.
 //
+//  Permission is hereby granted, free of charge, to any person obtaining a copy
+//  of this software and associated documentation files (the "Software"), to deal
+//  in the Software without restriction, including without limitation the rights
+//  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+//  copies of the Software, and to permit persons to whom the Software is
+//  do so, subject to the following conditions:
+//
+//  The above copyright notice and this permission notice shall be included in
+//  all copies or substantial portions of the Software.
+//
+//  THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+//  IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+//  FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+//  AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+//  LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+//  OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+//  THE SOFTWARE.
 
 import UIKit
 
@@ -18,8 +35,13 @@ internal let clearColor = UIColor.clearColor()
 internal let stackViewRowHeightAnchorConstraint: CGFloat = 44.0
 
 // MARK: - Controller
+
+/// The controller style determines the overall theme of the controller. Either White or Black.
+
 public enum ActionSheetControllerStyle: Int {
+    /// The white theme, with a light background.
     case White
+    /// The black theme, with a dark background.
     case Black
 }
 
@@ -37,7 +59,10 @@ public class ActionSheetController: UIViewController, UIViewControllerTransition
 
     private(set) var style: ActionSheetControllerStyle = .White
 
+    /// The message shown in the header of the controller.
     public var message: String?
+    /// Whether to disable background taps. When true, tapping outside the controller has no effect.
+    /// When false, tapping outside the controller dismisses the controller without triggering any actions.
     public var disableBackgroundTaps: Bool = false
 
     private var stackViewContainer: UIView = {
@@ -71,6 +96,7 @@ public class ActionSheetController: UIViewController, UIViewControllerTransition
         return stackView
     }()
 
+    /// Set the contentView to hold the view you want to display. If you need only buttons, do not set the content view.
     public var contentView: UIView?
 
     lazy private var backgroundView: UIView = {
@@ -118,6 +144,7 @@ public class ActionSheetController: UIViewController, UIViewControllerTransition
     var cancelActions: [ActionSheetControllerAction] = []
     var additionalActions: [ActionSheetControllerAction] = []
     
+    /// Set to true to let the persenting view shine through without blur effect.
     public var disableBlurEffects: Bool = false
     private var backgroundBlurEffectStyleForCurrentStyle: UIBlurEffectStyle {
         switch (self.style) {
@@ -129,6 +156,7 @@ public class ActionSheetController: UIViewController, UIViewControllerTransition
     }
     
     private var _disableBouncingEffects: Bool = false
+    /// Set to true to disable bouncing when showing the controller.
     public var disableBouncingEffects: Bool {
         get {
             if UIAccessibilityIsReduceMotionEnabled() {
@@ -142,8 +170,15 @@ public class ActionSheetController: UIViewController, UIViewControllerTransition
         }
     }
     
-    public var yConstraint: NSLayoutConstraint?
+    internal var yConstraint: NSLayoutConstraint?
     
+    /// Initializer. Style defaults to White. Generally you will want to pass in at least a title and/or a message.
+    /// Pass in any of the other arguments as needed. If you want to add more actions than the Cancel and/or OK actions, you can do so after instantiation.
+    /// - Parameter style: The controller's style. Either White or Black.
+    /// - Parameter title: The title shown in the controller's header.
+    /// - Parameter message: The message shown in the controller's header.
+    /// - Parameter cancelAction: A action appropriately configured for cancelling abd dismissing the controller.
+    /// - Parameter okAction: A action appropriately configured for actioning on and dismissing the controller.
     public init(style: ActionSheetControllerStyle = .White, title: String?, message: String?, cancelAction: ActionSheetControllerAction? = nil, okAction: ActionSheetControllerAction? = nil) {
         super.init(nibName: nil, bundle: nil)
         self.style = style
@@ -158,12 +193,13 @@ public class ActionSheetController: UIViewController, UIViewControllerTransition
         self.setup()
     }
     
+    /// Initializer when loaded from nib.
     override public init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: NSBundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
         self.setup()
     }
     
-    
+    /// Initializer when loaded from a decoder.
     required public init?(coder aDecoder: NSCoder) {
         super.init(coder: aDecoder)
         self.setup()
@@ -174,7 +210,7 @@ public class ActionSheetController: UIViewController, UIViewControllerTransition
         self.transitioningDelegate = self
     }
     
-    
+    /// Whether blur effects are disabled or not.
     public var blurEffectsDisabled: Bool {
         get {
             if UIAccessibilityIsReduceTransparencyEnabled() {
@@ -185,6 +221,7 @@ public class ActionSheetController: UIViewController, UIViewControllerTransition
     }
     
     
+    /// Forcibly public. Move on. Nothing to see here.
     override public func viewDidLoad() {
         super.viewDidLoad()
         
@@ -381,7 +418,7 @@ public class ActionSheetController: UIViewController, UIViewControllerTransition
         }
     }
 
-    
+    /// Forcibly public. Move on. Nothing to see here.
     public func animationControllerForPresentedController(presented: UIViewController, presentingController presenting: UIViewController, sourceController source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         let animationController = ActionControllerAnimationController()
         animationController.animationStyle = .Presenting
@@ -389,6 +426,7 @@ public class ActionSheetController: UIViewController, UIViewControllerTransition
     }
     
     
+    /// Forcibly public. Move on. Nothing to see here.
     public func animationControllerForDismissedController(dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
         let animationController = ActionControllerAnimationController()
         animationController.animationStyle = .Dismissing
@@ -396,6 +434,7 @@ public class ActionSheetController: UIViewController, UIViewControllerTransition
     }
     
 
+    /// Used to add actions, beyond the Cancel and OK actions that can be added in the initializer.
     public func addAction(action: ActionSheetControllerAction) {
         switch action.style {
         case .Additional:
