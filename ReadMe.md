@@ -18,7 +18,8 @@ Lets say you want to add a date picker:
 - You instantiate a UIDatePicker
 - You instantiate an action and consult the date picker in its handler, to extract the selected date:
 
-```objc    private func datePickerSheet() -> ActionSheetController {
+```swift
+private func datePickerSheet() -> ActionSheetController {
         let pickerView = UIDatePicker(frame: CGRectZero)
 
         let okAction = ActionSheetControllerAction(style: .Done, title: "OK", dismissesActionController: true) { controller in
@@ -41,7 +42,7 @@ Lets say you want to add a date picker:
 ###Presenting
 Presenting the controller is pretty standard:
 
-```objc
+```swift
         var sheetController = self.datePickerSheet()
         self.controller.presentViewController(sheetController, animated: true, completion: nil)
 ```
