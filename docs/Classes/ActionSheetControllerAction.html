@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>ActionSheetControllerAction Class Reference</title>
+    <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="../js/jquery.min.js" defer></script>
+    <script src="../js/jazzy.js" defer></script>
+    
+  </head>
+  <body>
+    <a name="//apple_ref/swift/Class/ActionSheetControllerAction" class="dashAnchor"></a>
+    <a title="ActionSheetControllerAction Class Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="../index.html"> Docs</a> (100% documented)</p>
+        <p class="header-right"><a href="https://github.com/sintraworks/ActionSheetController"><img src="../img/gh.png"/>View on GitHub</a></p>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="../index.html"> Reference</a>
+        <img id="carat" src="../img/carat.png" />
+        ActionSheetControllerAction Class Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="../Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Classes/ActionSheetController.html">ActionSheetController</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ActionSheetControllerAction.html">ActionSheetControllerAction</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/GroupedActionSheetControllerAction.html">GroupedActionSheetControllerAction</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Enums.html">Enums</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Enums/ActionSheetControllerActionStyle.html">ActionSheetControllerActionStyle</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/ActionSheetControllerStyle.html">ActionSheetControllerStyle</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Typealiases.html">Typealiases</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:21ActionSheetController34ActionSheetControllerActionHandler">ActionSheetControllerActionHandler</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            <h1>ActionSheetControllerAction</h1>
+              <div class="declaration">
+                <div class="language">
+                  <pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">ActionSheetControllerAction</span></code></pre>
+
+                </div>
+              </div>
+            <p>An ActionSheetControllerAction instance represents an action on the ActionSheetController that can be tapped by the user.
+It has a title or image for identifying the action and a handler which is called when the action has been tapped by the user.</p>
+
+          </section>
+          <section class="section task-group-section">
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:vC21ActionSheetController27ActionSheetControllerAction5imageGSqCSo7UIImage_"></a>
+                    <a name="//apple_ref/swift/Property/image" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vC21ActionSheetController27ActionSheetControllerAction5imageGSqCSo7UIImage_">image</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The action&rsquo;s image. It will not be shown if the action also has a title.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">image</span><span class="p">:</span> <span class="kt">UIImage</span><span class="p">?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FC21ActionSheetController27ActionSheetControllerActioncFMS0_FT5styleOS_32ActionSheetControllerActionStyle5titleGSqSS_5imageGSqCSo7UIImage_25dismissesActionControllerSb7handlerGSqFCS_21ActionSheetControllerT___S0_"></a>
+                    <a name="//apple_ref/swift/Method/init(style:title:image:dismissesActionController:handler:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC21ActionSheetController27ActionSheetControllerActioncFMS0_FT5styleOS_32ActionSheetControllerActionStyle5titleGSqSS_5imageGSqCSo7UIImage_25dismissesActionControllerSb7handlerGSqFCS_21ActionSheetControllerT___S0_">init(style:title:image:dismissesActionController:handler:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Provide at least a title or an image. (But not both. The title overrides the image.)
+If you want the action to dismiss the controller when clicked set dismissesActionController to true.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="nf">init</span><span class="p">(</span><span class="nv">style</span><span class="p">:</span> <span class="kt">ActionSheetControllerActionStyle</span> <span class="o">=</span> <span class="o">.</span><span class="kt">Done</span><span class="p">,</span> <span class="nv">title</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">,</span> <span class="nv">image</span><span class="p">:</span> <span class="kt">UIImage</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">,</span> <span class="nv">dismissesActionController</span><span class="p">:</span> <span class="kt">Bool</span> <span class="o">=</span> <span class="kc">false</span><span class="p">,</span> <span class="nv">handler</span><span class="p">:</span><span class="kt">ActionSheetControllerActionHandler</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2016 <a class="link" href="https://sintraworks.com" target="_blank" rel="external">SintraWorks</a>. All rights reserved. (Last updated: 2016-03-15)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.5.0</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</div>
+</html>

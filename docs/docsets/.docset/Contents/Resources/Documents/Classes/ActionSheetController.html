@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>ActionSheetController Class Reference</title>
+    <link rel="stylesheet" type="text/css" href="../css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="../css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="../js/jquery.min.js" defer></script>
+    <script src="../js/jazzy.js" defer></script>
+    
+  </head>
+  <body>
+    <a name="//apple_ref/swift/Class/ActionSheetController" class="dashAnchor"></a>
+    <a title="ActionSheetController Class Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="../index.html"> Docs</a> (100% documented)</p>
+        <p class="header-right"><a href="https://github.com/sintraworks/ActionSheetController"><img src="../img/gh.png"/>View on GitHub</a></p>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="../index.html"> Reference</a>
+        <img id="carat" src="../img/carat.png" />
+        ActionSheetController Class Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="../Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Classes/ActionSheetController.html">ActionSheetController</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/ActionSheetControllerAction.html">ActionSheetControllerAction</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Classes/GroupedActionSheetControllerAction.html">GroupedActionSheetControllerAction</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Enums.html">Enums</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Enums/ActionSheetControllerActionStyle.html">ActionSheetControllerActionStyle</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="../Enums/ActionSheetControllerStyle.html">ActionSheetControllerStyle</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="../Typealiases.html">Typealiases</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="../Typealiases.html#/s:21ActionSheetController34ActionSheetControllerActionHandler">ActionSheetControllerActionHandler</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            <h1>ActionSheetController</h1>
+              <div class="declaration">
+                <div class="language">
+                  <pre class="highlight"><code><span class="kd">public</span> <span class="kd">class</span> <span class="kt">ActionSheetController</span><span class="p">:</span> <span class="kt">UIViewController</span><span class="p">,</span> <span class="kt">UIViewControllerTransitioningDelegate</span><span class="p">,</span> <span class="kt">UIPopoverPresentationControllerDelegate</span></code></pre>
+
+                </div>
+              </div>
+            <p>iOS control for presenting a view in a style reminiscent of an action sheet/alert.
+You can add a custom view, and any number of buttons to represent and handle actions.</p>
+
+          </section>
+          <section class="section task-group-section">
+            <div class="task-group">
+              <ul>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:vC21ActionSheetController21ActionSheetController7messageGSqSS_"></a>
+                    <a name="//apple_ref/swift/Property/message" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vC21ActionSheetController21ActionSheetController7messageGSqSS_">message</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>The message shown in the header of the controller.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">message</span><span class="p">:</span> <span class="kt">String</span><span class="p">?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:vC21ActionSheetController21ActionSheetController21disableBackgroundTapsSb"></a>
+                    <a name="//apple_ref/swift/Property/disableBackgroundTaps" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vC21ActionSheetController21ActionSheetController21disableBackgroundTapsSb">disableBackgroundTaps</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Whether to disable background taps. When true, tapping outside the controller has no effect.
+When false, tapping outside the controller dismisses the controller without triggering any actions.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">disableBackgroundTaps</span><span class="p">:</span> <span class="kt">Bool</span> <span class="o">=</span> <span class="kc">false</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:vC21ActionSheetController21ActionSheetController11contentViewGSqCSo6UIView_"></a>
+                    <a name="//apple_ref/swift/Property/contentView" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vC21ActionSheetController21ActionSheetController11contentViewGSqCSo6UIView_">contentView</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Set the contentView to hold the view you want to display. If you need only buttons, do not set the content view.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">contentView</span><span class="p">:</span> <span class="kt">UIView</span><span class="p">?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:vC21ActionSheetController21ActionSheetController18disableBlurEffectsSb"></a>
+                    <a name="//apple_ref/swift/Property/disableBlurEffects" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vC21ActionSheetController21ActionSheetController18disableBlurEffectsSb">disableBlurEffects</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Set to true to let the persenting view shine through without blur effect.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">disableBlurEffects</span><span class="p">:</span> <span class="kt">Bool</span> <span class="o">=</span> <span class="kc">false</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:vC21ActionSheetController21ActionSheetController22disableBouncingEffectsSb"></a>
+                    <a name="//apple_ref/swift/Property/disableBouncingEffects" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vC21ActionSheetController21ActionSheetController22disableBouncingEffectsSb">disableBouncingEffects</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Set to true to disable bouncing when showing the controller.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">disableBouncingEffects</span><span class="p">:</span> <span class="kt">Bool</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FC21ActionSheetController21ActionSheetControllercFMS0_FT5styleOS_26ActionSheetControllerStyle5titleGSqSS_7messageGSqSS_12cancelActionGSqCS_27ActionSheetControllerAction_8okActionGSqS2___S0_"></a>
+                    <a name="//apple_ref/swift/Method/init(style:title:message:cancelAction:okAction:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC21ActionSheetController21ActionSheetControllercFMS0_FT5styleOS_26ActionSheetControllerStyle5titleGSqSS_7messageGSqSS_12cancelActionGSqCS_27ActionSheetControllerAction_8okActionGSqS2___S0_">init(style:title:message:cancelAction:okAction:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Initializer. Style defaults to White. Generally you will want to pass in at least a title and/or a message.
+Pass in any of the other arguments as needed. If you want to add more actions than the Cancel and/or OK actions, you can do so after instantiation.
+- Parameter style: The controller&rsquo;s style. Either White or Black.
+- Parameter title: The title shown in the controller&rsquo;s header.
+- Parameter message: The message shown in the controller&rsquo;s header.
+- Parameter cancelAction: A action appropriately configured for cancelling abd dismissing the controller.
+- Parameter okAction: A action appropriately configured for actioning on and dismissing the controller.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="nf">init</span><span class="p">(</span><span class="nv">style</span><span class="p">:</span> <span class="kt">ActionSheetControllerStyle</span> <span class="o">=</span> <span class="o">.</span><span class="kt">White</span><span class="p">,</span> <span class="nv">title</span><span class="p">:</span> <span class="kt">String</span><span class="p">?,</span> <span class="nv">message</span><span class="p">:</span> <span class="kt">String</span><span class="p">?,</span> <span class="nv">cancelAction</span><span class="p">:</span> <span class="kt">ActionSheetControllerAction</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">,</span> <span class="nv">okAction</span><span class="p">:</span> <span class="kt">ActionSheetControllerAction</span><span class="p">?</span> <span class="o">=</span> <span class="kc">nil</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                      <div>
+                        <h4>Parameters</h4>
+                        <table class="graybox">
+                          <tbody>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>style</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The controller&rsquo;s style. Either White or Black.</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>title</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The title shown in the controller&rsquo;s header.</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>message</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>The message shown in the controller&rsquo;s header.</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>cancelAction</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>A action appropriately configured for cancelling abd dismissing the controller.</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                            <tr>
+                              <td>
+                                <code>
+                                <em>okAction</em>
+                                </code>
+                              </td>
+                              <td>
+                                <div>
+                                  <p>A action appropriately configured for actioning on and dismissing the controller.</p>
+
+                                </div>
+                              </td>
+                            </tr>
+                          </tbody>
+                        </table>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FC21ActionSheetController21ActionSheetControllercFMS0_FT7nibNameGSqSS_6bundleGSqCSo8NSBundle__S0_"></a>
+                    <a name="//apple_ref/swift/Method/init(nibName:bundle:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC21ActionSheetController21ActionSheetControllercFMS0_FT7nibNameGSqSS_6bundleGSqCSo8NSBundle__S0_">init(nibName:bundle:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Initializer when loaded from nib.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="k">override</span> <span class="kd">public</span> <span class="nf">init</span><span class="p">(</span><span class="n">nibName</span> <span class="nv">nibNameOrNil</span><span class="p">:</span> <span class="kt">String</span><span class="p">?,</span> <span class="n">bundle</span> <span class="nv">nibBundleOrNil</span><span class="p">:</span> <span class="kt">NSBundle</span><span class="p">?)</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FC21ActionSheetController21ActionSheetControllercFMS0_FT5coderCSo7NSCoder_GSqS0__"></a>
+                    <a name="//apple_ref/swift/Method/init(coder:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC21ActionSheetController21ActionSheetControllercFMS0_FT5coderCSo7NSCoder_GSqS0__">init(coder:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Initializer when loaded from a decoder.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">required</span> <span class="kd">public</span> <span class="nf">init</span><span class="p">?(</span><span class="n">coder</span> <span class="nv">aDecoder</span><span class="p">:</span> <span class="kt">NSCoder</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:vC21ActionSheetController21ActionSheetController19blurEffectsDisabledSb"></a>
+                    <a name="//apple_ref/swift/Property/blurEffectsDisabled" class="dashAnchor"></a>
+                    <a class="token" href="#/s:vC21ActionSheetController21ActionSheetController19blurEffectsDisabledSb">blurEffectsDisabled</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Whether blur effects are disabled or not.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="k">var</span> <span class="nv">blurEffectsDisabled</span><span class="p">:</span> <span class="kt">Bool</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FC21ActionSheetController21ActionSheetController11viewDidLoadFS0_FT_T_"></a>
+                    <a name="//apple_ref/swift/Method/viewDidLoad()" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC21ActionSheetController21ActionSheetController11viewDidLoadFS0_FT_T_">viewDidLoad()</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Forcibly public. Move on. Nothing to see here.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="k">override</span> <span class="kd">public</span> <span class="kd">func</span> <span class="nf">viewDidLoad</span><span class="p">()</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FC21ActionSheetController21ActionSheetController41animationControllerForPresentedControllerFS0_FTCSo16UIViewController20presentingControllerS1_16sourceControllerS1__GSqPSo37UIViewControllerAnimatedTransitioning__"></a>
+                    <a name="//apple_ref/swift/Method/animationControllerForPresentedController(_:presentingController:sourceController:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC21ActionSheetController21ActionSheetController41animationControllerForPresentedControllerFS0_FTCSo16UIViewController20presentingControllerS1_16sourceControllerS1__GSqPSo37UIViewControllerAnimatedTransitioning__">animationControllerForPresentedController(_:presentingController:sourceController:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Forcibly public. Move on. Nothing to see here.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">animationControllerForPresentedController</span><span class="p">(</span><span class="nv">presented</span><span class="p">:</span> <span class="kt">UIViewController</span><span class="p">,</span> <span class="n">presentingController</span> <span class="nv">presenting</span><span class="p">:</span> <span class="kt">UIViewController</span><span class="p">,</span> <span class="n">sourceController</span> <span class="nv">source</span><span class="p">:</span> <span class="kt">UIViewController</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">UIViewControllerAnimatedTransitioning</span><span class="p">?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FC21ActionSheetController21ActionSheetController41animationControllerForDismissedControllerFS0_FCSo16UIViewControllerGSqPSo37UIViewControllerAnimatedTransitioning__"></a>
+                    <a name="//apple_ref/swift/Method/animationControllerForDismissedController(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC21ActionSheetController21ActionSheetController41animationControllerForDismissedControllerFS0_FCSo16UIViewControllerGSqPSo37UIViewControllerAnimatedTransitioning__">animationControllerForDismissedController(_:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Forcibly public. Move on. Nothing to see here.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">animationControllerForDismissedController</span><span class="p">(</span><span class="nv">dismissed</span><span class="p">:</span> <span class="kt">UIViewController</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kt">UIViewControllerAnimatedTransitioning</span><span class="p">?</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+                <li class="item">
+                  <div>
+                    <code>
+                    <a name="/s:FC21ActionSheetController21ActionSheetController9addActionFS0_FCS_27ActionSheetControllerActionT_"></a>
+                    <a name="//apple_ref/swift/Method/addAction(_:)" class="dashAnchor"></a>
+                    <a class="token" href="#/s:FC21ActionSheetController21ActionSheetController9addActionFS0_FCS_27ActionSheetControllerActionT_">addAction(_:)</a>
+                    </code>
+                  </div>
+                  <div class="height-container">
+                    <div class="pointer-container"></div>
+                    <section class="section">
+                      <div class="pointer"></div>
+                      <div class="abstract">
+                        <p>Used to add actions, beyond the Cancel and OK actions that can be added in the initializer.</p>
+
+                      </div>
+                      <div class="declaration">
+                        <h4>Declaration</h4>
+                        <div class="language">
+                          <p class="aside-title">Swift</p>
+                          <pre class="highlight"><code><span class="kd">public</span> <span class="kd">func</span> <span class="nf">addAction</span><span class="p">(</span><span class="nv">action</span><span class="p">:</span> <span class="kt">ActionSheetControllerAction</span><span class="p">)</span></code></pre>
+
+                        </div>
+                      </div>
+                    </section>
+                  </div>
+                </li>
+              </ul>
+            </div>
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2016 <a class="link" href="https://sintraworks.com" target="_blank" rel="external">SintraWorks</a>. All rights reserved. (Last updated: 2016-03-15)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.5.0</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</div>
+</html>

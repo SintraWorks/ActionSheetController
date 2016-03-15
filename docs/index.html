@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>  Reference</title>
+    <link rel="stylesheet" type="text/css" href="css/jazzy.css" />
+    <link rel="stylesheet" type="text/css" href="css/highlight.css" />
+    <meta charset='utf-8'>
+    <script src="js/jquery.min.js" defer></script>
+    <script src="js/jazzy.js" defer></script>
+    
+  </head>
+  <body>
+    <a title="  Reference"></a>
+    <header>
+      <div class="content-wrapper">
+        <p><a href="index.html"> Docs</a> (100% documented)</p>
+        <p class="header-right"><a href="https://github.com/sintraworks/ActionSheetController"><img src="img/gh.png"/>View on GitHub</a></p>
+      </div>
+    </header>
+    <div class="content-wrapper">
+      <p id="breadcrumbs">
+        <a href="index.html"> Reference</a>
+        <img id="carat" src="img/carat.png" />
+          Reference
+      </p>
+    </div>
+    <div class="content-wrapper">
+      <nav class="sidebar">
+        <ul class="nav-groups">
+          <li class="nav-group-name">
+            <a href="Classes.html">Classes</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Classes/ActionSheetController.html">ActionSheetController</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/ActionSheetControllerAction.html">ActionSheetControllerAction</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Classes/GroupedActionSheetControllerAction.html">GroupedActionSheetControllerAction</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Enums.html">Enums</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Enums/ActionSheetControllerActionStyle.html">ActionSheetControllerActionStyle</a>
+              </li>
+              <li class="nav-group-task">
+                <a href="Enums/ActionSheetControllerStyle.html">ActionSheetControllerStyle</a>
+              </li>
+            </ul>
+          </li>
+          <li class="nav-group-name">
+            <a href="Typealiases.html">Typealiases</a>
+            <ul class="nav-group-tasks">
+              <li class="nav-group-task">
+                <a href="Typealiases.html#/s:21ActionSheetController34ActionSheetControllerActionHandler">ActionSheetControllerActionHandler</a>
+              </li>
+            </ul>
+          </li>
+        </ul>
+      </nav>
+      <article class="main-content">
+        <section>
+          <section class="section">
+            
+            <a href='#acionsheetcontroller' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h1 id='acionsheetcontroller'>AcionSheetController</h1>
+
+<p>AcionSheetController is an iOS control for presenting a view in an iOS action sheet or alert style. You can add a custom view, representing your custom content, and add any number of buttons to represent actions related to that content. You can also forgo any custom view and simply present a number of actionable buttons.</p>
+
+<p><img src="https://sintraworks.github.io/ActionSheetController/Images/ActionSheetContollerSample1.png" alt="Picker View">
+<img src="https://sintraworks.github.io/ActionSheetController/Images/ActionSheetContollerSample2.png" alt="Buttons, light theme"></p>
+
+<p><img src="https://sintraworks.github.io/ActionSheetController/Images/ActionSheetContollerSample3.png" alt="Buttons, dark theme"></p>
+
+<p>AcionSheetController is written in <strong>Swift</strong> and was inspired by <a href="https://github.com/CooperRS/RMActionController">RMActionController</a> by <a href="https://github.com/CooperRS">Roland Moers</a>. AcionSheetController differs in a number of aspects, firstly, of course, by being written in Swift, and also importantly by basing itself on <strong>UIStackView</strong>.</p>
+<a href='#usage' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h1 id='usage'>Usage</h1>
+
+<p>By default ActionSheetController doesn&rsquo;t contain a content view, and will only show buttons for any actions you add. To show a content view you simply set the contentView property to hold the desired view. There is generally no need to subclass ActionSheetController, although you can if you want to.</p>
+<a href='#adding_a_view' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h3 id='adding_a_view'>Adding a view</h3>
+
+<p>Lets say you want to add a date picker:
+- You instantiate a UIDatePicker
+- You instantiate an action and consult the date picker in its handler, to extract the selected date:</p>
+<pre class="highlight swift"><code><span class="kd">private</span> <span class="kd">func</span> <span class="nf">datePickerSheet</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kt">ActionSheetController</span> <span class="p">{</span>
+<span class="k">let</span> <span class="nv">pickerView</span> <span class="o">=</span> <span class="kt">UIDatePicker</span><span class="p">(</span><span class="nv">frame</span><span class="p">:</span> <span class="kt">CGRectZero</span><span class="p">)</span>
+
+<span class="k">let</span> <span class="nv">okAction</span> <span class="o">=</span> <span class="kt">ActionSheetControllerAction</span><span class="p">(</span><span class="nv">style</span><span class="p">:</span> <span class="o">.</span><span class="kt">Done</span><span class="p">,</span> <span class="nv">title</span><span class="p">:</span> <span class="s">"OK"</span><span class="p">,</span> <span class="nv">dismissesActionController</span><span class="p">:</span> <span class="kc">true</span><span class="p">)</span> <span class="p">{</span> <span class="n">controller</span> <span class="k">in</span>
+<span class="k">let</span> <span class="nv">date</span> <span class="o">=</span> <span class="n">pickerView</span><span class="o">.</span><span class="n">date</span>
+<span class="k">let</span> <span class="nv">action</span> <span class="o">=</span> <span class="kt">AlertAction</span><span class="p">(</span><span class="nv">title</span><span class="p">:</span> <span class="s">"Hurray!"</span><span class="p">,</span> <span class="nv">style</span><span class="p">:</span> <span class="o">.</span><span class="kt">Default</span><span class="p">,</span> <span class="nv">enabled</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span> <span class="nv">isPreferredAction</span><span class="p">:</span> <span class="kc">true</span><span class="p">)</span> <span class="p">{</span>
+<span class="nf">print</span><span class="p">(</span><span class="s">"Dismissed!"</span><span class="p">)</span>
+<span class="p">}</span>
+<span class="k">let</span> <span class="nv">alertInfo</span> <span class="o">=</span> <span class="kt">AlertInfo</span><span class="p">(</span><span class="nv">title</span><span class="p">:</span> <span class="s">"Success"</span><span class="p">,</span> <span class="nv">message</span><span class="p">:</span> <span class="s">"You picked date: </span><span class="se">\(</span><span class="n">date</span><span class="o">.</span><span class="n">description</span><span class="se">)</span><span class="s">"</span><span class="p">,</span> <span class="nv">actions</span><span class="p">:</span> <span class="p">[</span><span class="n">action</span><span class="p">])</span>
+<span class="kt">AlertPresenter</span><span class="o">.</span><span class="n">sharedAlertPresenter</span><span class="o">.</span><span class="nf">addAlert</span><span class="p">(</span><span class="n">alertInfo</span><span class="p">)</span>
+<span class="p">}</span>
+
+<span class="k">let</span> <span class="nv">cancelAction</span> <span class="o">=</span> <span class="kt">ActionSheetControllerAction</span><span class="p">(</span><span class="nv">style</span><span class="p">:</span> <span class="o">.</span><span class="kt">Cancel</span><span class="p">,</span> <span class="nv">title</span><span class="p">:</span> <span class="s">"Cancel"</span><span class="p">,</span> <span class="nv">dismissesActionController</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span> <span class="nv">handler</span><span class="p">:</span> <span class="kc">nil</span><span class="p">)</span>
+<span class="k">let</span> <span class="nv">sheetController</span> <span class="o">=</span> <span class="kt">ActionSheetController</span><span class="p">(</span><span class="nv">title</span><span class="p">:</span> <span class="s">"Date Picker"</span><span class="p">,</span> <span class="nv">message</span><span class="p">:</span> <span class="s">"Pick a date for your enjoyment…"</span><span class="p">,</span> <span class="nv">cancelAction</span><span class="p">:</span> <span class="n">cancelAction</span><span class="p">,</span> <span class="nv">okAction</span><span class="p">:</span> <span class="n">okAction</span><span class="p">)</span>
+
+<span class="n">sheetController</span><span class="o">.</span><span class="n">contentView</span> <span class="o">=</span> <span class="n">pickerView</span>
+
+<span class="k">return</span> <span class="n">sheetController</span>
+<span class="p">}</span>
+</code></pre>
+<a href='#presenting' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h3 id='presenting'>Presenting</h3>
+
+<p>Presenting the controller is pretty standard:</p>
+<pre class="highlight swift"><code><span class="k">var</span> <span class="nv">sheetController</span> <span class="o">=</span> <span class="k">self</span><span class="o">.</span><span class="nf">datePickerSheet</span><span class="p">()</span>
+<span class="k">self</span><span class="o">.</span><span class="n">controller</span><span class="o">.</span><span class="nf">presentViewController</span><span class="p">(</span><span class="n">sheetController</span><span class="p">,</span> <span class="nv">animated</span><span class="p">:</span> <span class="kc">true</span><span class="p">,</span> <span class="nv">completion</span><span class="p">:</span> <span class="kc">nil</span><span class="p">)</span>
+</code></pre>
+<a href='#presentation_style' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h3 id='presentation_style'>Presentation Style</h3>
+
+<p>ActionSheetController can be presented as a popover on iPad, and it has a light and a dark theme, suitable for different context, and/or personal preference.</p>
+<a href='#requirements' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h3 id='requirements'>Requirements</h3>
+
+<table><thead>
+<tr>
+<th style="text-align: left">Compile Time</th>
+<th style="text-align: left">Runtime</th>
+</tr>
+</thead><tbody>
+<tr>
+<td style="text-align: left">Xcode 7</td>
+<td style="text-align: left">iOS 9</td>
+</tr>
+<tr>
+<td style="text-align: left">iOS 9 SDK</td>
+<td style="text-align: left"></td>
+</tr>
+</tbody></table>
+<a href='#license_mit_license' class='anchor' aria-hidden=true><span class="header-anchor"></span></a><h2 id='license_mit_license'>License (MIT License)</h2>
+
+<p>Copyright &copy; 2016 Antonio Nunes</p>
+
+<p>Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the <q>Software</q>), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:</p>
+
+<p>The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.</p>
+
+<p>THE SOFTWARE IS PROVIDED <q>AS IS</q>, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.</p>
+
+          </section>
+        </section>
+        <section id="footer">
+          <p>&copy; 2016 <a class="link" href="https://sintraworks.com" target="_blank" rel="external">SintraWorks</a>. All rights reserved. (Last updated: 2016-03-15)</p>
+          <p>Generated by <a class="link" href="https://github.com/realm/jazzy" target="_blank" rel="external">jazzy ♪♫ v0.5.0</a>, a <a class="link" href="http://realm.io" target="_blank" rel="external">Realm</a> project.</p>
+        </section>
+      </article>
+    </div>
+  </body>
+</div>
+</html>
