@@ -25,86 +25,60 @@
 
 import UIKit
 
-internal let whiteColor = UIColor.whiteColor()
-internal let transparentWhiteColor = UIColor.whiteColor().colorWithAlphaComponent(0.75)
-internal let blackColor = UIColor.blackColor()
-internal let transparentBlackColor = UIColor.blackColor().colorWithAlphaComponent(0.75)
-internal let unblurredBackgroundColorForLightStyle = blackColor.colorWithAlphaComponent(0.2)
-internal let unblurredBackgroundColorForDarkStyle = whiteColor.colorWithAlphaComponent(0.2)
-internal let clearColor = UIColor.clearColor()
-internal let stackViewRowHeightAnchorConstraint: CGFloat = 44.0
+internal let LightColor = UIColor.whiteColor()
+internal let TransparentLightColor = UIColor.whiteColor().colorWithAlphaComponent(0.75)
+internal let DarkColor = UIColor.blackColor()
+internal let TransparentDarkColor = UIColor.blackColor().colorWithAlphaComponent(0.75)
+internal let UnblurredBackgroundColorForLightStyle = DarkColor.colorWithAlphaComponent(0.2)
+internal let UnblurredBackgroundColorForDarkStyle = LightColor.colorWithAlphaComponent(0.2)
+internal let ClearColor = UIColor.clearColor()
+internal let StackViewRowHeightAnchorConstraint: CGFloat = 44.0
+
 
 // MARK: - Controller
 
 /// The controller style determines the overall theme of the controller. Either White or Black.
 
 public enum ActionSheetControllerStyle: Int {
-    /// The white theme, with a light background.
-    case White
-    /// The black theme, with a dark background.
-    case Black
+    /// The light theme, with a light background.
+    case Light
+    /// The dark theme, with a dark background.
+    case Dark
 }
 
 
 /// iOS control for presenting a view in a style reminiscent of an action sheet/alert.
 /// You can add a custom view, and any number of buttons to represent and handle actions.
-
-public class ActionSheetController: UIViewController, UIViewControllerTransitioningDelegate, UIPopoverPresentationControllerDelegate {
+public class ActionSheetController: UIViewController, UIViewControllerTransitioningDelegate {
     private let interStackViewheightAnchorConstraint: CGFloat = 16.0
     private var cornerRadius: CGFloat {
         get {
             return (UIDevice.currentDevice().userInterfaceIdiom == .Pad) ? 8.0 : 4.0
         }
     }
-
-    private(set) var style: ActionSheetControllerStyle = .White
-
+    
+    private(set) var style: ActionSheetControllerStyle = .Light
+    
     /// The message shown in the header of the controller.
     public var message: String?
+    
     /// Whether to disable background taps. When true, tapping outside the controller has no effect.
     /// When false, tapping outside the controller dismisses the controller without triggering any actions.
     public var disableBackgroundTaps: Bool = false
-
-    private var stackViewContainer: UIView = {
-        let stackViewContainer = UIView(frame: CGRectZero)
-        stackViewContainer.translatesAutoresizingMaskIntoConstraints = false
-        stackViewContainer.backgroundColor = clearColor
-        return stackViewContainer
-    }()
     
-    private var combinedStackView: UIStackView = {
-        let stackView = UIStackView(frame: CGRectZero)
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        stackView.axis = .Vertical
-        stackView.distribution = .Fill
-        return stackView
-    }()
-
-    private var topStackView: UIStackView = {
-        let stackView = UIStackView(frame: CGRectZero)
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        stackView.axis = .Vertical
-        stackView.distribution = .Fill
-        return stackView
-    }()
-
-    private var bottomStackView: UIStackView = {
-        let stackView = UIStackView(frame: CGRectZero)
-        stackView.translatesAutoresizingMaskIntoConstraints = false
-        stackView.axis = .Vertical
-        stackView.distribution = .Fill
-        return stackView
-    }()
-
-    /// Set the contentView to hold the view you want to display. If you need only buttons, do not set the content view.
-    public var contentView: UIView?
-
+    var additionalActions: [ActionSheetControllerAction] = []
+    var doneActions: [ActionSheetControllerAction] = []
+    var cancelActions: [ActionSheetControllerAction] = []
+    
+    var animationConstraint: NSLayoutConstraint?
+    
     lazy private var backgroundView: UIView = {
         var backgroundView: UIView? = nil
         if self.blurEffectsDisabled {
             backgroundView = UIView(frame: CGRectZero)
-            backgroundView?.backgroundColor = self.style == .White ?  unblurredBackgroundColorForLightStyle : unblurredBackgroundColorForDarkStyle
+            backgroundView?.backgroundColor = self.style == .Light ?  UnblurredBackgroundColorForLightStyle : UnblurredBackgroundColorForDarkStyle
         } else {
+            // Note that on older hardware the blur effect may not render correctly (although still acceptably).
             let effect = UIBlurEffect(style: self.backgroundBlurEffectStyleForCurrentStyle)
             backgroundView = UIVisualEffectView(effect: effect)
         }
@@ -112,65 +86,136 @@ public class ActionSheetController: UIViewController, UIViewControllerTransition
         guard let resultView = backgroundView else { fatalError("Could not create backgroundView") }
         resultView.translatesAutoresizingMaskIntoConstraints = false
         
-        let tapRecognizer = UITapGestureRecognizer(target: self, action: Selector("backgroundViewTapped"))
+        let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(ActionSheetController.backgroundViewTapped))
         resultView.addGestureRecognizer(tapRecognizer)
         
         return resultView
     }()
     
-    lazy private var headerTitleLabel: UILabel = {
-        let label = UILabel(frame: CGRectZero)
-        label.backgroundColor = clearColor
-        label.textColor = self.style == .White ?  UIColor.darkGrayColor() : UIColor.lightGrayColor()
-        label.font = UIFont.boldSystemFontOfSize(UIFont.systemFontSize())
+    /// Returns the outer stack view that will hold the inner stackviews adn separator view as appropriate.
+    lazy private var outerStackView: UIStackView = {
+        return self.stackView()
+    }()
+    
+    /// The stack view to be used as the top stack view. This stack view holds all actions except the cancel actions, and it holds the controller's content view.
+    lazy private var topStackView: UIStackView = {
+        return self.stackView()
+    }()
+    
+    /// The stack view to be used as the bottom stack view. This stack view holds only the cancel actions, if any.
+    lazy private var bottomStackView: UIStackView = {
+        return self.stackView()
+    }()
+    
+    /// Set the contentView to hold the view you want to display. If you need only buttons, do not set the content view.
+    public var contentView: UIView?
+    
+    /// Returns a UIView to be used as a separator row between the top and bottom stack views.
+    private func interStackViewSeparatorView() -> UIView {
+        let emptyView = UIView(frame: CGRectZero)
+        emptyView.backgroundColor = ClearColor
+        emptyView.heightAnchor.constraintEqualToConstant(self.interStackViewheightAnchorConstraint).active = true
+        return emptyView
+    }
+    
+    /// Returns a UILabel with the majority of settings preapared for use in this controller. Only the font needs setting by the caller.
+    private func label(text: String) -> UILabel {
+        let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
+        label.text = text
         label.textAlignment = .Center
+        label.textColor = self.style == .Light ? UIColor.darkGrayColor() : UIColor.lightGrayColor()
+        label.backgroundColor = UIColor.clearColor()
         label.numberOfLines = 0
         return label
-    }()
+    }
     
-    lazy private var headerMessageLabel: UILabel = {
-        let label = UILabel(frame: CGRectZero)
-        label.backgroundColor = clearColor
-        label.textColor = self.style == .White ?  UIColor.darkGrayColor() : UIColor.lightGrayColor()
-        label.font = UIFont.systemFontOfSize(UIFont.systemFontSize())
-        label.translatesAutoresizingMaskIntoConstraints = false
-        label.textAlignment = .Center
-        label.numberOfLines = 0;
-        return label
-    }()
+    /// Returns a UIStackView prepared for use in this controller.
+    private func stackView() -> UIStackView {
+        let stackView = UIStackView()
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.axis = .Vertical
+        stackView.distribution = .Fill
+        stackView.alignment = .Fill
+        return stackView
+    }
     
-    var doneActions: [ActionSheetControllerAction] = []
-    var cancelActions: [ActionSheetControllerAction] = []
-    var additionalActions: [ActionSheetControllerAction] = []
+    /// Returns a view to enclose a stack view (top ro bottom), prepared such that the stack view will display rounded corners.
+    private func roundedCornerContainerForView(view: UIView) -> UIView {
+        let roundedCornerContainerView = UIView(frame: CGRectZero)
+        roundedCornerContainerView.layer.cornerRadius = 4
+        roundedCornerContainerView.layer.masksToBounds = true
+        roundedCornerContainerView.backgroundColor = self.contextAwareBackgroundColor
+        
+        roundedCornerContainerView.addSubview(view)
+        view.leftAnchor.constraintEqualToAnchor(roundedCornerContainerView.leftAnchor).active = true
+        view.topAnchor.constraintEqualToAnchor(roundedCornerContainerView.topAnchor).active = true
+        view.rightAnchor.constraintEqualToAnchor(roundedCornerContainerView.rightAnchor).active = true
+        view.bottomAnchor.constraintEqualToAnchor(roundedCornerContainerView.bottomAnchor).active = true
+        
+        return roundedCornerContainerView
+    }
     
-    /// Set to true to let the persenting view shine through without blur effect.
-    public var disableBlurEffects: Bool = false
-    private var backgroundBlurEffectStyleForCurrentStyle: UIBlurEffectStyle {
-        switch (self.style) {
-        case .White:
-            return .Dark
-        case .Black:
-            return .Light;
+    
+    private var contextAwareLightColor: UIColor {
+        return self.blurEffectsDisabled ? LightColor : TransparentLightColor
+    }
+    
+    private var contextAwareDarkColor: UIColor {
+        return self.blurEffectsDisabled ? DarkColor : TransparentDarkColor
+        
+    }
+    
+    private var contextAwareBackgroundColor: UIColor {
+        switch self.style {
+        case .Light:
+            return self.contextAwareLightColor
+        case .Dark:
+            return self.contextAwareDarkColor
         }
     }
     
-    private var _disableBouncingEffects: Bool = false
+    /// Whether blur effects are disabled or not.
+    public var disableBlurEffects: Bool = false
+    public var blurEffectsDisabled: Bool {
+        get {
+            if UIAccessibilityIsReduceTransparencyEnabled() {
+                return true
+            }
+            return disableBlurEffects
+        }
+    }
+    
+    private var backgroundBlurEffectStyleForCurrentStyle: UIBlurEffectStyle {
+        switch (self.style) {
+        case .Light:
+            return .Light
+        case .Dark:
+            return .Dark;
+        }
+    }
+    
+    public var disableBouncingEffects: Bool = false
     /// Set to true to disable bouncing when showing the controller.
-    public var disableBouncingEffects: Bool {
+    public var bouncingEffectsDisabled: Bool {
         get {
             if UIAccessibilityIsReduceMotionEnabled() {
                 return true
             }
             
-            return _disableBouncingEffects
-        }
-        set {
-            _disableBouncingEffects = newValue
+            return disableBouncingEffects
         }
     }
     
-    internal var yConstraint: NSLayoutConstraint?
+    /// Returns a view that separates the successive rows within the top ro bottom stack view.
+    private func separatorView() -> UIView {
+        let separatorViewHeight: CGFloat = 1.0 / UIScreen.mainScreen().scale
+        let separatorView = UIView(frame: CGRectZero)
+        separatorView.backgroundColor = UIColor.darkGrayColor()
+        separatorView.heightAnchor.constraintEqualToConstant(separatorViewHeight).active = true
+        return separatorView
+    }
+    
     
     /// Initializer. Style defaults to White. Generally you will want to pass in at least a title and/or a message.
     /// Pass in any of the other arguments as needed. If you want to add more actions than the Cancel and/or OK actions, you can do so after instantiation.
@@ -179,13 +224,13 @@ public class ActionSheetController: UIViewController, UIViewControllerTransition
     /// - Parameter message: The message shown in the controller's header.
     /// - Parameter cancelAction: A action appropriately configured for cancelling abd dismissing the controller.
     /// - Parameter okAction: A action appropriately configured for actioning on and dismissing the controller.
-    public init(style: ActionSheetControllerStyle = .White, title: String?, message: String?, cancelAction: ActionSheetControllerAction? = nil, okAction: ActionSheetControllerAction? = nil) {
+    public init(style: ActionSheetControllerStyle = .Light, title: String?, message: String?, cancelAction: ActionSheetControllerAction? = nil, okAction: ActionSheetControllerAction? = nil) {
         super.init(nibName: nil, bundle: nil)
         self.style = style
         self.title = title
         self.message = message
         if let cancelAction = cancelAction {
-         self.addAction(cancelAction)
+            self.addAction(cancelAction)
         }
         if let okAction = okAction {
             self.addAction(okAction)
@@ -193,8 +238,9 @@ public class ActionSheetController: UIViewController, UIViewControllerTransition
         self.setup()
     }
     
+    
     /// Initializer when loaded from nib.
-    override public init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: NSBundle?) {
+    override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: NSBundle?) {
         super.init(nibName: nibNameOrNil, bundle: nibBundleOrNil)
         self.setup()
     }
@@ -205,178 +251,111 @@ public class ActionSheetController: UIViewController, UIViewControllerTransition
         self.setup()
     }
     
-    private func setup() {
-        self.modalPresentationStyle = .OverCurrentContext
-        self.transitioningDelegate = self
-    }
-    
-    /// Whether blur effects are disabled or not.
-    public var blurEffectsDisabled: Bool {
-        get {
-            if UIAccessibilityIsReduceTransparencyEnabled() {
-                return true
-            }
-            return disableBlurEffects
-        }
-    }
-    
-    
-    /// Forcibly public. Move on. Nothing to see here.
     override public func viewDidLoad() {
         super.viewDidLoad()
         
-        self.view.translatesAutoresizingMaskIntoConstraints = true
-        self.view.backgroundColor = clearColor
-        self.view.layer.masksToBounds = true
-
-        if self.modalPresentationStyle != .Popover {
-            self.view.addSubview(self.backgroundView)
-            self.view.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|-(0)-[BGView]-(0)-|", options: [NSLayoutFormatOptions(rawValue: 0)], metrics: nil, views: ["BGView" : self.backgroundView]))
-            self.view.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:|-(0)-[BGView]-(0)-|", options: [NSLayoutFormatOptions(rawValue: 0)], metrics: nil, views: ["BGView" : self.backgroundView]))
-        }
-
-        self.setupStackViews()
-        
-        let minimalSize = self.view.systemLayoutSizeFittingSize(CGSizeMake(999, 999))
-        self.preferredContentSize = CGSizeMake(minimalSize.width, minimalSize.height + 10);
-        
-        self.popoverPresentationController?.delegate = self
-
-        if UIDevice.currentDevice().userInterfaceIdiom != .Pad {
-            self.addMotionEffects()
-        }
+        self.setupViewHierarchy()
     }
     
     
-    private func addMotionEffects() {
-        let verticalMotionEffect = UIInterpolatingMotionEffect(keyPath: "center.y", type: .TiltAlongVerticalAxis)
-        verticalMotionEffect.minimumRelativeValue = -10
-        verticalMotionEffect.maximumRelativeValue = 10
-        
-        let horizontalMotionEffect = UIInterpolatingMotionEffect(keyPath: "center.x", type: .TiltAlongHorizontalAxis)
-        horizontalMotionEffect.minimumRelativeValue = -10
-        horizontalMotionEffect.maximumRelativeValue = 10
-        
-        let motionEffectGroup = UIMotionEffectGroup()
-        motionEffectGroup.motionEffects = [horizontalMotionEffect, verticalMotionEffect]
-        
-        self.view.addMotionEffect(motionEffectGroup)
+    public func animationControllerForPresentedController(presented: UIViewController, presentingController presenting: UIViewController, sourceController source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        let animationController = ActionControllerAnimationController()
+        animationController.animationStyle = .Presenting
+        return animationController
     }
     
-
-    private func setupStackViews() {
-        setupTopStackView()
+    
+    public func animationControllerForDismissedController(dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
+        let animationController = ActionControllerAnimationController()
+        animationController.animationStyle = .Dismissing
+        return animationController
+    }
+    
+    private func setup() {
+        self.modalPresentationStyle = .OverCurrentContext
+        self.transitioningDelegate = self // transitioningDelegate is a weak property, so no retain cycle created here.
+    }
+    
+    
+    private func setupViewHierarchy() {
+        self.view.backgroundColor = UIColor.clearColor()
+        self.view.translatesAutoresizingMaskIntoConstraints = false
+        
+        let outerStackView = self.outerStackView
+        
+        self.setupTopStackView()
+        let topContainer = self.roundedCornerContainerForView(self.topStackView)
+        outerStackView.addArrangedSubview(topContainer)
         
         if self.cancelActions.count > 0 {
-            self.combinedStackView.addArrangedSubview(self.interStackViewSeparatorView())
-            setupBottomStackView()
-        }
-
-        var viewsDict: [String : UIView] = ["stackView" : self.combinedStackView]
-        self.stackViewContainer.addSubview(self.combinedStackView)
-        self.stackViewContainer.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|-(0)-[stackView]-(0)-|", options: [NSLayoutFormatOptions(rawValue: 0)], metrics: nil, views: viewsDict))
-        self.stackViewContainer.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:|-(0)-[stackView]-(0)-|", options: [NSLayoutFormatOptions(rawValue: 0)], metrics: nil, views: viewsDict))
-
-        var baseView = self.view
-        
-        if let effectView = self.backgroundView as? UIVisualEffectView where self.modalPresentationStyle != .Popover {
-            baseView = effectView.contentView
+            outerStackView.addArrangedSubview(self.interStackViewSeparatorView())
+            self.setupBottomStackView()
+            let bottomContainer = self.roundedCornerContainerForView(bottomStackView)
+            outerStackView.addArrangedSubview(bottomContainer)
         }
         
-        viewsDict = ["stackViewContainer" : self.stackViewContainer]
-        baseView.addSubview(self.stackViewContainer)
-        baseView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|-(10)-[stackViewContainer]-(10)-|", options: [NSLayoutFormatOptions(rawValue: 0)], metrics: nil, views: viewsDict))
-        baseView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:|-(10)-[stackViewContainer]-(10)-|", options: [NSLayoutFormatOptions(rawValue: 0)], metrics: nil, views: viewsDict))
-
-    }
-
-    
-    private func interStackViewSeparatorView() -> UIView {
-        let emptyView = UIView(frame: CGRectZero)
-        emptyView.backgroundColor = clearColor
-        emptyView.heightAnchor.constraintEqualToConstant(interStackViewheightAnchorConstraint).active = true
-        return emptyView
+        self.view.addSubview(outerStackView)
+        outerStackView.centerXAnchor.constraintEqualToAnchor(self.view.centerXAnchor).active = true
+        outerStackView.widthAnchor.constraintEqualToAnchor(self.view.widthAnchor, constant: -20.0).active = true
+        outerStackView.bottomAnchor.constraintEqualToAnchor(self.view.bottomAnchor, constant: -8.0).active = true
     }
     
-    
-    private func separatorView() -> UIView {
-        let separatorViewHeight: CGFloat = 1.0 / UIScreen.mainScreen().scale
-        let separatorView = UIView(frame: CGRectZero)
-        separatorView.backgroundColor = UIColor.darkGrayColor()
-        separatorView.heightAnchor.constraintEqualToConstant(separatorViewHeight).active = true
-        return separatorView
-    }
-    
-    
-    private func contextAwareWhiteColor() -> UIColor {
-        return self.blurEffectsDisabled ? whiteColor : transparentWhiteColor
-    }
-    
-
-    private func contextAwareBlackColor() -> UIColor {
-        return self.blurEffectsDisabled ? blackColor : transparentBlackColor
-    }
-    
-    
-    private func contextAwareBackgroundColor() -> UIColor {
-        switch self.style {
-        case .White:
-            return self.contextAwareWhiteColor()
-        case .Black:
-            return self.contextAwareBlackColor()
-        }
-    }
-
     
     private func setupTopStackView() {
-        let sideMarginsMetrics = ["sideMargins" : 10.0]
- 
-        let headerView = UIView(frame: CGRectZero)
-        headerView.backgroundColor = self.contextAwareBackgroundColor()
-        
-        if self.title != nil {
-            self.headerTitleLabel.text = self.title
-            headerView.addSubview(self.headerTitleLabel)
-            headerView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|-(sideMargins)-[label]-(sideMargins)-|", options: [NSLayoutFormatOptions(rawValue: 0)], metrics: sideMarginsMetrics, views: ["label" : self.headerTitleLabel]))
-            headerView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:|-(10)-[label]", options: [NSLayoutFormatOptions(rawValue: 0)], metrics: nil, views: ["label" : self.headerTitleLabel]))
-            if self.message == nil {
-                headerView.addConstraint(NSLayoutConstraint(item: self.headerTitleLabel, attribute: .Bottom, relatedBy: .Equal, toItem: headerView, attribute: .Bottom, multiplier: 1.0, constant: 10.0))
+        if self.title != nil || self.message != nil {
+            let headerView = UIView()
+            var titleLabel: UILabel? = nil
+            
+            if let title = self.title {
+                let label = self.label(title)
+                label.font = UIFont.boldSystemFontOfSize(UIFont.systemFontSize())
+                
+                headerView.addSubview(label)
+                label.centerXAnchor.constraintEqualToAnchor(headerView.centerXAnchor).active = true
+                label.widthAnchor.constraintEqualToAnchor(headerView.widthAnchor, constant: -20.0).active = true
+                label.topAnchor.constraintEqualToAnchor(headerView.topAnchor, constant: 10.0).active = true
+                
+                if self.message == nil {
+                    label.bottomAnchor.constraintEqualToAnchor(headerView.bottomAnchor, constant: -10.0).active = true
+                }
+                
+                titleLabel = label
             }
-        }
-
-        if self.message != nil {
-            self.headerMessageLabel.text = self.message
-            headerView.addSubview(self.headerMessageLabel)
-            headerView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|-(sideMargins)-[label]-(sideMargins)-|", options: [NSLayoutFormatOptions(rawValue: 0)], metrics: sideMarginsMetrics, views: ["label" : self.headerMessageLabel]))
-            headerView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:[label]-(10)-|", options: [NSLayoutFormatOptions(rawValue: 0)], metrics: nil, views: ["label" : self.headerMessageLabel]))
-            if self.title == nil {
-                headerView.addConstraint(NSLayoutConstraint(item: self.headerMessageLabel, attribute: .Top, relatedBy: .Equal, toItem: headerView, attribute: .Top, multiplier: 1.0, constant: 10.0))
-            } else {
-                headerView.addConstraint(NSLayoutConstraint(item: self.headerMessageLabel, attribute: .Top, relatedBy: .Equal, toItem: self.headerTitleLabel, attribute: .Bottom, multiplier: 1.0, constant: 8.0))
+            
+            if let message = self.message {
+                let label = self.label(message)
+                label.font = UIFont.systemFontOfSize(UIFont.systemFontSize())
+                
+                headerView.addSubview(label)
+                label.centerXAnchor.constraintEqualToAnchor(headerView.centerXAnchor).active = true
+                label.widthAnchor.constraintEqualToAnchor(headerView.widthAnchor, constant: -20.0).active = true
+                label.bottomAnchor.constraintEqualToAnchor(headerView.bottomAnchor, constant: -10.0).active = true
+                
+                let relatedAnchor = (titleLabel != nil) ? titleLabel!.bottomAnchor : headerView.topAnchor
+                label.topAnchor.constraintEqualToAnchor(relatedAnchor, constant: 10.0).active = true
             }
+            
+            self.topStackView.addArrangedSubview(headerView)
+            self.topStackView.addArrangedSubview(self.separatorView())
         }
-        self.topStackView.addArrangedSubview(headerView)
-        self.topStackView.addArrangedSubview(separatorView())
         
         for action in self.additionalActions {
             self.topStackView.addArrangedSubview(action.view)
             self.topStackView.addArrangedSubview(separatorView())
         }
-
+        
+        
         if let middleView = self.contentView {
-            middleView.backgroundColor = self.contextAwareBackgroundColor()
             self.topStackView.addArrangedSubview(middleView)
             self.topStackView.addArrangedSubview(separatorView())
         }
-    
+        
         for action in self.doneActions {
             self.topStackView.addArrangedSubview(action.view)
             if action !== self.doneActions.last! {
                 self.topStackView.addArrangedSubview(separatorView())
             }
         }
-        
-        self.combinedStackView.addArrangedSubview(self.roundedCornerContainerForView(self.topStackView))
     }
     
     
@@ -387,53 +366,8 @@ public class ActionSheetController: UIViewController, UIViewControllerTransition
                 self.bottomStackView.addArrangedSubview(separatorView())
             }
         }
-        
-        self.combinedStackView.addArrangedSubview(self.roundedCornerContainerForView(self.bottomStackView))
     }
     
-    
-    private func blur() -> UIBlurEffect {
-        return UIBlurEffect(style: self.containerBlurEffectStyleForCurrentStyle())
-    }
-    
-    
-    private func roundedCornerContainerForView(view: UIView) -> UIView {
-        let roundedCornerContainerView = UIView(frame: CGRectZero)
-        roundedCornerContainerView.layer.cornerRadius = cornerRadius
-        roundedCornerContainerView.layer.masksToBounds = true
-        roundedCornerContainerView.addSubview(view)
-        let viewsDict: [String : UIView] = ["view" : view]
-        roundedCornerContainerView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|-(0)-[view]-(0)-|", options: [NSLayoutFormatOptions(rawValue: 0)], metrics: nil, views: viewsDict))
-        roundedCornerContainerView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:|-(0)-[view]-(0)-|", options: [NSLayoutFormatOptions(rawValue: 0)], metrics: nil, views: viewsDict))
-        return roundedCornerContainerView
-    }
-    
-    
-    private func containerBlurEffectStyleForCurrentStyle() -> UIBlurEffectStyle {
-        switch (self.style) {
-        case .White:
-            return .Light;
-        case .Black:
-            return .Dark;
-        }
-    }
-
-    /// Forcibly public. Move on. Nothing to see here.
-    public func animationControllerForPresentedController(presented: UIViewController, presentingController presenting: UIViewController, sourceController source: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        let animationController = ActionControllerAnimationController()
-        animationController.animationStyle = .Presenting
-        return animationController
-    }
-    
-    
-    /// Forcibly public. Move on. Nothing to see here.
-    public func animationControllerForDismissedController(dismissed: UIViewController) -> UIViewControllerAnimatedTransitioning? {
-        let animationController = ActionControllerAnimationController()
-        animationController.animationStyle = .Dismissing
-        return animationController
-    }
-    
-
     /// Used to add actions, beyond the Cancel and OK actions that can be added in the initializer.
     public func addAction(action: ActionSheetControllerAction) {
         switch action.style {
@@ -468,87 +402,91 @@ private enum ActionControllerAnimationStyle {
 class ActionControllerAnimationController: NSObject, UIViewControllerAnimatedTransitioning {
     private var animationStyle: ActionControllerAnimationStyle = .Presenting
     
-    private let longTransitionDuration: NSTimeInterval = 1.0
+    private let longTransitionDuration: NSTimeInterval = 1.5
     private let shortTransitionDuration: NSTimeInterval = 0.3
     
     func animateTransition(transitionContext: UIViewControllerContextTransitioning) {
         guard let containerView = transitionContext.containerView() else { return }
         
         if self.animationStyle == .Presenting {
-            let toVC = transitionContext.viewControllerForKey(UITransitionContextToViewControllerKey)
-            if let actionController = toVC as? ActionSheetController {
-                // Condition commented out because, the effect looks quite bad, even though I think this is how Apple wants us to implement this.
-                // Fading in the background view instead, actually looks good in my tests, but the system logs a warning for doing it.
-//                    if let effectView = actionController.backgroundView as? UIVisualEffectView {
-//                        effectView.effect = nil
-//                    } else {
-                        actionController.backgroundView.alpha = 0.0
-//                    }
-                containerView.addSubview(actionController.view)
-                containerView.addSubview(actionController.backgroundView)
-                containerView.addSubview(actionController.stackViewContainer)
-
-                let backgroundViewBindingsDict = ["BGView": actionController.backgroundView]
-                let baseViewBindingsDict = ["BaseView": actionController.view]
-
-                containerView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|-(0)-[BaseView]-(0)-|", options:[NSLayoutFormatOptions(rawValue: 0)], metrics:nil, views:baseViewBindingsDict))
-                containerView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:|-(0)-[BaseView]-(0)-|", options:[NSLayoutFormatOptions(rawValue: 0)], metrics:nil, views:baseViewBindingsDict))
-
-                containerView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("H:|-(0)-[BGView]-(0)-|", options:[NSLayoutFormatOptions(rawValue: 0)], metrics:nil, views:backgroundViewBindingsDict))
-                containerView.addConstraints(NSLayoutConstraint.constraintsWithVisualFormat("V:|-(0)-[BGView]-(0)-|", options:[NSLayoutFormatOptions(rawValue: 0)], metrics:nil, views:backgroundViewBindingsDict))
-
-                containerView.addConstraint(NSLayoutConstraint(item: actionController.stackViewContainer, attribute: .CenterX, relatedBy: .Equal, toItem: containerView, attribute: .CenterX, multiplier: 1.0, constant: 0.0))
-                containerView.addConstraint(NSLayoutConstraint(item: actionController.stackViewContainer, attribute: .Width, relatedBy: .Equal, toItem: containerView, attribute: .Width, multiplier: 1.0, constant: -20.0))
-
-                actionController.yConstraint = NSLayoutConstraint(item: actionController.stackViewContainer, attribute: .Top, relatedBy: .Equal, toItem:containerView, attribute:.Bottom, multiplier:1, constant:0)
-                containerView.addConstraint(actionController.yConstraint!)
-
-                containerView.setNeedsUpdateConstraints()
-                containerView.layoutIfNeeded()
-
-                containerView.removeConstraint(actionController.yConstraint!)
-                actionController.yConstraint = NSLayoutConstraint(item: actionController.stackViewContainer, attribute: .Bottom, relatedBy: .Equal, toItem:containerView, attribute:.Bottom, multiplier:1, constant:-10)
-                containerView.addConstraint(actionController.yConstraint!)
-
-                containerView.setNeedsUpdateConstraints()
-
-                var damping: CGFloat = 1.0
-                var duration = shortTransitionDuration
-                if !actionController.disableBouncingEffects {
-                    damping = 0.6
-                    duration = longTransitionDuration
-                }
-
-                UIView.animateWithDuration(duration, delay: 0.0, usingSpringWithDamping: damping, initialSpringVelocity: 1.0, options: [.BeginFromCurrentState, .AllowUserInteraction], animations: { () -> Void in
-                    // Condition commented out because the effect looks quite bad, even though I think this is how Apple wants us to implement this.
-                    // Fading in the background view instead, actually looks good in my tests, but the system logs a warning for doing it.
-//                    if let effectView = actionController.backgroundView as? UIVisualEffectView {
-//                        effectView.effect = UIBlurEffect(style: actionController.backgroundBlurEffectStyleForCurrentStyle)
-//                    } else {
-                        actionController.backgroundView.alpha = 1.0
-//                    }
-                    containerView.layoutIfNeeded()
-                    }, completion: { (finished) -> Void in
-                        transitionContext.completeTransition(true)
-                })
+            guard let actionController = transitionContext.viewControllerForKey(UITransitionContextToViewControllerKey) as? ActionSheetController else { return }
+            
+            let effectView = actionController.backgroundView
+            let mainView = actionController.view
+            
+            // Condition commented out because, the effect looks quite bad, even though I think this is how Apple wants us to implement this.
+            // Fading in the background view instead, actually looks good in my tests, but the system logs a warning for doing it.
+            //                    if let effectView = actionController.backgroundView as? UIVisualEffectView {
+            //                        effectView.effect = nil
+            //                    } else {
+            effectView.alpha = 0.0
+            //                    }
+            
+            containerView.addSubview(effectView)
+            effectView.leftAnchor.constraintEqualToAnchor(containerView.leftAnchor).active = true
+            effectView.rightAnchor.constraintEqualToAnchor(containerView.rightAnchor).active = true
+            effectView.heightAnchor.constraintEqualToAnchor(containerView.heightAnchor).active = true
+            effectView.topAnchor.constraintEqualToAnchor(containerView.topAnchor).active = true
+            containerView.setNeedsUpdateConstraints()
+            containerView.layoutIfNeeded()
+            
+            if let effectView = effectView as? UIVisualEffectView {
+                effectView.contentView.addSubview(mainView)
+            } else {
+                effectView.addSubview(mainView)
             }
+            mainView.centerXAnchor.constraintEqualToAnchor(effectView.centerXAnchor).active = true
+            mainView.widthAnchor.constraintEqualToAnchor(effectView.widthAnchor).active = true
+            mainView.heightAnchor.constraintEqualToAnchor(effectView.heightAnchor).active = true
+            let initialConstraint = mainView.topAnchor.constraintEqualToAnchor(effectView.bottomAnchor)
+            initialConstraint.active = true
+            effectView.setNeedsUpdateConstraints()
+            effectView.layoutIfNeeded()
+            effectView.removeConstraint(initialConstraint)
+            
+            actionController.animationConstraint = mainView.bottomAnchor.constraintEqualToAnchor(effectView.bottomAnchor)
+            actionController.animationConstraint!.active = true
+            
+            containerView.setNeedsUpdateConstraints()
+            
+            var damping: CGFloat = 1.0
+            var duration = shortTransitionDuration
+            if !actionController.bouncingEffectsDisabled {
+                damping = 0.6
+                duration = longTransitionDuration
+            }
+            
+            UIView.animateWithDuration(duration, delay: 0.0, usingSpringWithDamping: damping, initialSpringVelocity: 1.0, options: [.BeginFromCurrentState, .AllowUserInteraction], animations: { () -> Void in
+                // Condition commented out because the effect looks quite bad, even though I think this is how Apple wants us to implement this.
+                // Fading in the background view instead, actually looks good in my tests, but the system logs a warning for doing it.
+                //                    if let effectView = actionController.backgroundView as? UIVisualEffectView {
+                //                        effectView.effect = UIBlurEffect(style: actionController.backgroundBlurEffectStyleForCurrentStyle)
+                //                    } else {
+                effectView.alpha = 1.0
+                //                    }
+                effectView.layoutIfNeeded()
+                }, completion: { (finished) -> Void in
+                    transitionContext.completeTransition(true)
+            })
+            
         } else if self.animationStyle == .Dismissing {
-            let fromVC = transitionContext.viewControllerForKey(UITransitionContextFromViewControllerKey)
-            if let actionController = fromVC as? ActionSheetController {
-                containerView.removeConstraint(actionController.yConstraint!)
-                actionController.yConstraint = NSLayoutConstraint(item:actionController.stackViewContainer, attribute:.Top, relatedBy:.Equal, toItem:containerView, attribute:.Bottom, multiplier:1, constant:0)
-                containerView.addConstraint(actionController.yConstraint!)
-
+            if let actionController = transitionContext.viewControllerForKey(UITransitionContextFromViewControllerKey) as? ActionSheetController {
+                let mainView = actionController.view
+                let effectView = actionController.backgroundView
+                
+                effectView.removeConstraint(actionController.animationConstraint!)
+                
+                mainView.topAnchor.constraintEqualToAnchor(effectView.bottomAnchor).active = true
                 containerView.setNeedsUpdateConstraints()
-
-                UIView.animateWithDuration(0.25, delay: 0, options:[.BeginFromCurrentState], animations:{ () -> Void in
+                
+                UIView.animateWithDuration(shortTransitionDuration, delay: 0, options:[.BeginFromCurrentState], animations:{ () -> Void in
                     // Condition commented out because, the effect looks quite bad, even though I think this is how Apple wants us to implement this.
                     // Fading in the background view instead, actually looks good in my tests, but the system logs a warning for doing it.
-//                    if let effectView = actionController.backgroundView as? UIVisualEffectView {
-//                        effectView.effect = nil
-//                    } else {
-                        actionController.backgroundView.alpha = 0.0
-//                    }
+                    //                    if let effectView = actionController.backgroundView as? UIVisualEffectView {
+                    //                        effectView.effect = nil
+                    //                    } else {
+                    actionController.backgroundView.alpha = 0.0
+                    //                    }
                     containerView.layoutIfNeeded()
                     }, completion: { (finished) -> Void in
                         transitionContext.completeTransition(true)
@@ -556,13 +494,13 @@ class ActionControllerAnimationController: NSObject, UIViewControllerAnimatedTra
             }
         }
     }
- 
+    
     
     func transitionDuration(transitionContext: UIViewControllerContextTransitioning?) -> NSTimeInterval {
         if self.animationStyle == .Presenting {
             let toViewController = transitionContext?.viewControllerForKey(UITransitionContextToViewControllerKey)
             if let actionController = toViewController as? ActionSheetController {
-                if actionController.disableBouncingEffects {
+                if actionController.bouncingEffectsDisabled {
                     return shortTransitionDuration
                 } else {
                     return longTransitionDuration
@@ -574,5 +512,5 @@ class ActionControllerAnimationController: NSObject, UIViewControllerAnimatedTra
         
         return longTransitionDuration
     }
-
+    
 }

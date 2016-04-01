@@ -44,9 +44,9 @@ class TableViewDelegate: NSObject {
         
         switch rowIdentifier {
         case .CustomView:
-            sheetController = self.customSheet(.White)
+            sheetController = self.customSheet(.Light)
         case .BlackCustomView:
-            sheetController = self.customSheet(.Black)
+            sheetController = self.customSheet(.Dark)
         case .DatePickerView:
             sheetController = self.datePickerSheet()
         case .TransparentBackground:
@@ -56,7 +56,7 @@ class TableViewDelegate: NSObject {
         case .GroupedActions:
             sheetController = self.groupedActionsSheet()
         case .GroupedActionsBlack:
-            sheetController = self.groupedActionsSheet(.Black)
+            sheetController = self.groupedActionsSheet(.Dark)
         }
         
         self.controller.presentViewController(sheetController, animated: true, completion: nil)
@@ -107,7 +107,7 @@ extension TableViewDelegate {
     }
     
     
-    private func groupedActionsSheet(style: ActionSheetControllerStyle = .White) -> ActionSheetController {
+    private func groupedActionsSheet(style: ActionSheetControllerStyle = .Light) -> ActionSheetController {
         let okAction = ActionSheetControllerAction(style: .Done, title: "OK", dismissesActionController: true ) { _ in
             AudioServicesPlaySystemSound(1103)
             let speechsynth = AVSpeechSynthesizer()
@@ -155,7 +155,7 @@ extension TableViewDelegate {
         label.textAlignment = .Center
         label.adjustsFontSizeToFitWidth = true
         
-        if style == .Black {
+        if style == .Dark {
             label.textColor = UIColor.lightTextColor()
         } else {
             label.textColor = UIColor.darkTextColor()
