@@ -189,9 +189,9 @@ public class ActionSheetController: UIViewController, UIViewControllerTransition
     private var backgroundBlurEffectStyleForCurrentStyle: UIBlurEffectStyle {
         switch (self.style) {
         case .Light:
-            return .Light
+            return .Dark
         case .Dark:
-            return .Dark;
+            return .Light;
         }
     }
     
