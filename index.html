@@ -2,7 +2,7 @@
 <html lang="en-us">
   <head>
     <meta charset="UTF-8">
-    <title>QueuedAlertPresenter by SintraWorks</title>
+    <title>ActionSheetController by SintraWorks</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel="stylesheet" type="text/css" href="stylesheets/normalize.css" media="screen">
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
@@ -11,8 +11,8 @@
   </head>
   <body>
     <section class="page-header">
-      <h1 class="project-name">QueuedAlertPresenter</h1>
-      <h2 class="project-tagline">Using QueuedAlertPresenter instead of UIAlertController directly, ensures your user gets to see all the alerts your code creates.</h2>
+      <h1 class="project-name">ActionSheetController</h1>
+      <h2 class="project-tagline">AcionSheetController is an iOS control for presenting a view in an iOS action sheet or alert style.</h2>
       <a href="https://github.com/SintraWorks/ActionSheetController" class="btn">View on GitHub</a>
       <a href="https://github.com/SintraWorks/ActionSheetController/zipball/master" class="btn">Download .zip</a>
       <a href="https://github.com/SintraWorks/ActionSheetController/tarball/master" class="btn">Download .tar.gz</a>
@@ -20,28 +20,65 @@
 
     <section class="main-content">
       <h1>
-<a id="queuedalertpresenter" class="anchor" href="#queuedalertpresenter" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>QueuedAlertPresenter</h1>
+<a id="acionsheetcontroller" class="anchor" href="#acionsheetcontroller" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>AcionSheetController</h1>
 
-<p>A QueuedAlertPresenter serializes the presentation of alerts. Use it when your code needs to present alerts in rapid succession, where the user may not be able to keep up with the alerts.</p>
+<p>AcionSheetController is an iOS control for presenting a view in an iOS action sheet or alert style. You can add a custom view, representing your custom content, and add any number of buttons to represent actions related to that content. You can also forgo any custom view and simply present a number of actionable buttons.</p>
 
-<p>Using QueuedAlertPresenter instead of UIAlertController directly, ensures your user gets to see all the alerts your code creates.</p>
+<p><img src="https://sintraworks.github.io/ActionSheetController/Images/ActionSheetContollerSample1.png" alt="Picker View">
+<img src="https://sintraworks.github.io/ActionSheetController/Images/ActionSheetContollerSample2.png" alt="Buttons, light theme"></p>
 
-<p>To present an alert create an instance of AlertInfo then add it to the sharedAlertPresenter with addAlert(alertInfo).
-AlertInfo holds the information for an individual alert you want to present.</p>
+<p><img src="https://sintraworks.github.io/ActionSheetController/Images/ActionSheetContollerSample3.png" alt="Buttons, dark theme"></p>
 
-<p><img src="https://sintraworks.github.io/QueuedAlertPresenter/Images/QueuedAlertPresenter!.png" alt="Demo app">
-<img src="https://sintraworks.github.io/QueuedAlertPresenter/Images/QueuedAlertPresenter!.png" alt="Sample Alert"></p>
-
-<p>QueuedAlertPresenter is written in <strong>Swift</strong>.</p>
+<p>AcionSheetController is written in <strong>Swift</strong> and was inspired by <a href="https://github.com/CooperRS/RMActionController">RMActionController</a> by <a href="https://github.com/CooperRS">Roland Moers</a>. AcionSheetController differs in a number of aspects, firstly, of course, by being written in Swift, and also importantly by basing itself on <strong>UIStackView</strong>.</p>
 
 <h1>
 <a id="usage" class="anchor" href="#usage" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Usage</h1>
 
-<div class="highlight highlight-source-swift"><pre><span class="pl-k">func</span> <span class="pl-en">showAlert</span>() {
-    <span class="pl-k">let</span> action <span class="pl-k">=</span> AlertAction(title: <span class="pl-s"><span class="pl-pds">"</span>Hit me<span class="pl-pds">"</span></span>, style: <span class="pl-k">.</span>Default, enabled: <span class="pl-c1">true</span>, isPreferredAction: <span class="pl-c1">true</span>, handler: <span class="pl-c1">nil</span>)
-    <span class="pl-k">let</span> alertInfo <span class="pl-k">=</span> AlertInfo(title: <span class="pl-s"><span class="pl-pds">"</span>Success<span class="pl-pds">"</span></span>, message: <span class="pl-s"><span class="pl-pds">"</span>Hey, this is alert nº <span class="pl-pse">\(</span><span class="pl-s1">i</span><span class="pl-pse">)</span><span class="pl-pds">"</span></span>, actions: [action])
-    QueuedAlertPresenter<span class="pl-k">.</span>sharedAlertPresenter<span class="pl-k">.</span>addAlert(alertInfo)
-}</pre></div>
+<p>By default ActionSheetController doesn't contain a content view, and will only show buttons for any actions you add. To show a content view you simply set the contentView property to hold the desired view. There is generally no need to subclass ActionSheetController, although you can if you want to.</p>
+
+<h3>
+<a id="adding-a-view" class="anchor" href="#adding-a-view" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Adding a view</h3>
+
+<p>Lets say you want to add a date picker:</p>
+
+<ul>
+<li>You instantiate a UIDatePicker</li>
+<li>You instantiate an action and consult the date picker in its handler, to extract the selected date.</li>
+<li>You set the picker as the content view of the ActionSheetController</li>
+</ul>
+
+<div class="highlight highlight-source-swift"><pre><span class="pl-k">private</span> <span class="pl-k">func</span> <span class="pl-en">datePickerSheet</span>() <span class="pl-k">-&gt;</span> ActionSheetController {
+        <span class="pl-k">let</span> pickerView <span class="pl-k">=</span> UIDatePicker(frame: CGRectZero)
+
+        <span class="pl-k">let</span> okAction <span class="pl-k">=</span> ActionSheetControllerAction(style: <span class="pl-k">.</span>Done, title: <span class="pl-s"><span class="pl-pds">"</span>OK<span class="pl-pds">"</span></span>, dismissesActionController: <span class="pl-c1">true</span>) { controller <span class="pl-k">in</span>
+            <span class="pl-k">let</span> date <span class="pl-k">=</span> pickerView<span class="pl-k">.</span>date
+            <span class="pl-k">let</span> action <span class="pl-k">=</span> AlertAction(title: <span class="pl-s"><span class="pl-pds">"</span>Hurray!<span class="pl-pds">"</span></span>, style: <span class="pl-k">.</span>Default, enabled: <span class="pl-c1">true</span>, isPreferredAction: <span class="pl-c1">true</span>) {
+                <span class="pl-c1">print</span>(<span class="pl-s"><span class="pl-pds">"</span>Dismissed!<span class="pl-pds">"</span></span>)
+            }
+            <span class="pl-k">let</span> alertInfo <span class="pl-k">=</span> AlertInfo(title: <span class="pl-s"><span class="pl-pds">"</span>Success<span class="pl-pds">"</span></span>, message: <span class="pl-s"><span class="pl-pds">"</span>You picked date: <span class="pl-pse">\(</span><span class="pl-s1">date<span class="pl-k">.</span><span class="pl-c1">description</span></span><span class="pl-pse">)</span><span class="pl-pds">"</span></span>, actions: [action])
+            AlertPresenter<span class="pl-k">.</span>sharedAlertPresenter<span class="pl-k">.</span>addAlert(alertInfo)
+        }
+
+        <span class="pl-k">let</span> cancelAction <span class="pl-k">=</span> ActionSheetControllerAction(style: <span class="pl-k">.</span>Cancel, title: <span class="pl-s"><span class="pl-pds">"</span>Cancel<span class="pl-pds">"</span></span>, dismissesActionController: <span class="pl-c1">true</span>, handler: <span class="pl-c1">nil</span>)
+        <span class="pl-k">let</span> sheetController <span class="pl-k">=</span> ActionSheetController(title: <span class="pl-s"><span class="pl-pds">"</span>Date Picker<span class="pl-pds">"</span></span>, message: <span class="pl-s"><span class="pl-pds">"</span>Pick a date for your enjoyment…<span class="pl-pds">"</span></span>, cancelAction: cancelAction, okAction: okAction)
+
+        sheetController<span class="pl-k">.</span>contentView <span class="pl-k">=</span> pickerView
+
+        <span class="pl-k">return</span> sheetController
+    }</pre></div>
+
+<h3>
+<a id="presenting" class="anchor" href="#presenting" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Presenting</h3>
+
+<p>Presenting the controller is pretty standard:</p>
+
+<div class="highlight highlight-source-swift"><pre>        <span class="pl-k">var</span> sheetController <span class="pl-k">=</span> <span class="pl-k">self</span><span class="pl-k">.</span>datePickerSheet()
+        <span class="pl-k">self</span><span class="pl-k">.</span>controller<span class="pl-k">.</span>presentViewController(sheetController, animated: <span class="pl-c1">true</span>, completion: <span class="pl-c1">nil</span>)</pre></div>
+
+<h3>
+<a id="presentation-style" class="anchor" href="#presentation-style" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Presentation Style</h3>
+
+<p>ActionSheetController can be presented as a popover on iPad, and it has a light and a dark theme, suitable for different context, and/or personal preference.</p>
 
 <h3>
 <a id="requirements" class="anchor" href="#requirements" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Requirements</h3>
@@ -56,7 +93,7 @@ AlertInfo holds the information for an individual alert you want to present.</p>
 <tbody>
 <tr>
 <td align="left">Xcode 7</td>
-<td align="left">iOS 8</td>
+<td align="left">iOS 9</td>
 </tr>
 <tr>
 <td align="left">iOS 9 SDK</td>
@@ -89,7 +126,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.</p>
 
       <footer class="site-footer">
-        <span class="site-footer-owner"><a href="https://github.com/SintraWorks/ActionSheetController">QueuedAlertPresenter</a> is maintained by <a href="https://github.com/SintraWorks">SintraWorks</a>.</span>
+        <span class="site-footer-owner"><a href="https://github.com/SintraWorks/ActionSheetController">ActionSheetController</a> is maintained by <a href="https://github.com/SintraWorks">SintraWorks</a>.</span>
 
         <span class="site-footer-credits">This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the <a href="https://github.com/jasonlong/cayman-theme">Cayman theme</a> by <a href="https://twitter.com/jasonlong">Jason Long</a>.</span>
       </footer>
