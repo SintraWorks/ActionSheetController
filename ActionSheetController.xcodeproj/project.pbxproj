@@ -156,9 +156,7 @@
 			children = (
 				6DFE8A461C9802C900E6DA5C /* ReadMe.md */,
 				6DFE8A471C9803ED00E6DA5C /* License.txt */,
-				6D5958B01C96F5AC0022D616 /* AlertPresenter.framework */,
-				6D5958B71C96F8740022D616 /* AlertPresenter.swift */,
-				6D5958B91C96F9030022D616 /* UIViewController+Helpers.swift */,
+				6DC548241CB8C41B0081CF28 /* AlertPresenter */,
 				6D5958531C96D7CC0022D616 /* ActionSheetController */,
 				6D59585F1C96D7CC0022D616 /* ActionSheetControllerTests */,
 				6D5958761C96DA2C0022D616 /* ActionSheetControllerDemo */,
@@ -231,6 +229,16 @@
 				6D5958991C96DA2C0022D616 /* Info.plist */,
 			);
 			path = ActionSheetControllerDemoUITests;
+			sourceTree = "<group>";
+		};
+		6DC548241CB8C41B0081CF28 /* AlertPresenter */ = {
+			isa = PBXGroup;
+			children = (
+				6D5958B01C96F5AC0022D616 /* AlertPresenter.framework */,
+				6D5958B71C96F8740022D616 /* AlertPresenter.swift */,
+				6D5958B91C96F9030022D616 /* UIViewController+Helpers.swift */,
+			);
+			name = AlertPresenter;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
