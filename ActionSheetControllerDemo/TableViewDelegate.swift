@@ -25,7 +25,6 @@
 
 import UIKit
 import ActionSheetController
-import AlertPresenter
 import AudioToolbox
 import AVFoundation
 
@@ -95,7 +94,7 @@ extension TableViewDelegate {
                 print("Dismissed!")
             }
             let alertInfo = AlertInfo(title: "Success", message: "You picked date: \(date.description)", actions: [action])
-            AlertPresenter.sharedAlertPresenter.addAlert(alertInfo)
+            QueuedAlertPresenter.sharedAlertPresenter.addAlert(alertInfo)
         }
         
         let cancelAction = ActionSheetControllerAction(style: .Cancel, title: "Cancel", dismissesActionController: true, handler: nil)
@@ -121,19 +120,19 @@ extension TableViewDelegate {
         let action1 = ActionSheetControllerAction(style: .Done, title: "Action 1", dismissesActionController: false) { controller in
             let action = AlertAction(title: "Hit me", style: .Default, enabled: true, isPreferredAction: true, handler: nil)
             let alertInfo = AlertInfo(title: "Success", message: "You picked action 1", actions: [action])
-            AlertPresenter.sharedAlertPresenter.addAlert(alertInfo)
+            QueuedAlertPresenter.sharedAlertPresenter.addAlert(alertInfo)
         }
 
         let action2 = ActionSheetControllerAction(style: .Additional, title: "Action 2", dismissesActionController: false) { controller in
             let action = AlertAction(title: "Hit me too", style: .Default, enabled: true, isPreferredAction: true, handler: nil)
             let alertInfo = AlertInfo(title: "Success", message: "You picked action 2", actions: [action])
-            AlertPresenter.sharedAlertPresenter.addAlert(alertInfo)
+            QueuedAlertPresenter.sharedAlertPresenter.addAlert(alertInfo)
         }
 
         let action3 = ActionSheetControllerAction(style: .Additional, title: "Action 3", dismissesActionController: false) { controller in
             let action = AlertAction(title: "Allright already!", style: .Default, enabled: true, isPreferredAction: true, handler: nil)
             let alertInfo = AlertInfo(title: "Success", message: "You picked action 3", actions: [action])
-            AlertPresenter.sharedAlertPresenter.addAlert(alertInfo)
+            QueuedAlertPresenter.sharedAlertPresenter.addAlert(alertInfo)
         }
 
         let groupedAction = GroupedActionSheetControllerAction(style: .Additional, actions: [action1, action2, action3])
@@ -143,7 +142,7 @@ extension TableViewDelegate {
             for i in 1...5 {
                 let action = AlertAction(title: (i == 5) ? "Stop it!" : String(i), style: .Default, enabled: true, isPreferredAction: false, handler: nil)
                 let alertInfo = AlertInfo(title: "Success", message: "You engaged the alert gun. This is alert number \(String(i)).", actions: [action])
-                AlertPresenter.sharedAlertPresenter.addAlert(alertInfo)
+                QueuedAlertPresenter.sharedAlertPresenter.addAlert(alertInfo)
             }
         }
         sheetController.addAction(action4)
@@ -177,7 +176,7 @@ extension TableViewDelegate {
             }
             let action = AlertAction(title: "It's Poetry :-)", style: .Default, enabled: true, isPreferredAction: true, handler: nil)
             let alertInfo = AlertInfo(title: "Fantastic", message: "You wrote: \(s)", actions: [action])
-            AlertPresenter.sharedAlertPresenter.addAlert(alertInfo)
+            QueuedAlertPresenter.sharedAlertPresenter.addAlert(alertInfo)
         }
         
         let cancelAction = ActionSheetControllerAction(style: .Cancel, title: "Cancel", dismissesActionController: true, handler: nil)
@@ -199,7 +198,7 @@ extension TableViewDelegate {
                 print("Dismissed!")
             }
             let alertInfo = AlertInfo(title: "Success", message: "You picked date: \(date.description)", actions: [action])
-            AlertPresenter.sharedAlertPresenter.addAlert(alertInfo)
+            QueuedAlertPresenter.sharedAlertPresenter.addAlert(alertInfo)
         }
         
         let cancelAction = ActionSheetControllerAction(style: .Cancel, title: "Cancel", dismissesActionController: true, handler: nil)

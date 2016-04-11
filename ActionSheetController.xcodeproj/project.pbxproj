@@ -23,11 +23,9 @@
 		6D5958981C96DA2C0022D616 /* ActionSheetControllerDemoUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D5958971C96DA2C0022D616 /* ActionSheetControllerDemoUITests.swift */; };
 		6D5958A41C96DEAB0022D616 /* TableViewDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D5958A31C96DEAB0022D616 /* TableViewDelegate.swift */; };
 		6D5958A61C96DEE60022D616 /* TableViewDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D5958A51C96DEE60022D616 /* TableViewDataSource.swift */; };
-		6D5958B11C96F5AC0022D616 /* AlertPresenter.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6D5958B01C96F5AC0022D616 /* AlertPresenter.framework */; };
-		6D5958B21C96F5AC0022D616 /* AlertPresenter.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6D5958B01C96F5AC0022D616 /* AlertPresenter.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		6D5958B31C96F5C00022D616 /* ActionSheetController.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6D5958511C96D7CC0022D616 /* ActionSheetController.framework */; };
 		6D5958B41C96F5C00022D616 /* ActionSheetController.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 6D5958511C96D7CC0022D616 /* ActionSheetController.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
-		6D5958B81C96F8740022D616 /* AlertPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D5958B71C96F8740022D616 /* AlertPresenter.swift */; };
+		6D5958B81C96F8740022D616 /* QueuedAlertPresenter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D5958B71C96F8740022D616 /* QueuedAlertPresenter.swift */; };
 		6D5958BA1C96F9030022D616 /* UIViewController+Helpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6D5958B91C96F9030022D616 /* UIViewController+Helpers.swift */; };
 		6DFE8A481C9803ED00E6DA5C /* License.txt in Resources */ = {isa = PBXBuildFile; fileRef = 6DFE8A471C9803ED00E6DA5C /* License.txt */; };
 /* End PBXBuildFile section */
@@ -71,7 +69,6 @@
 			dstSubfolderSpec = 10;
 			files = (
 				6D5958B41C96F5C00022D616 /* ActionSheetController.framework in Embed Frameworks */,
-				6D5958B21C96F5AC0022D616 /* AlertPresenter.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -102,8 +99,7 @@
 		6D5958991C96DA2C0022D616 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		6D5958A31C96DEAB0022D616 /* TableViewDelegate.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TableViewDelegate.swift; sourceTree = "<group>"; };
 		6D5958A51C96DEE60022D616 /* TableViewDataSource.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TableViewDataSource.swift; sourceTree = "<group>"; };
-		6D5958B01C96F5AC0022D616 /* AlertPresenter.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AlertPresenter.framework; sourceTree = "<group>"; };
-		6D5958B71C96F8740022D616 /* AlertPresenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AlertPresenter.swift; sourceTree = "<group>"; };
+		6D5958B71C96F8740022D616 /* QueuedAlertPresenter.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = QueuedAlertPresenter.swift; sourceTree = "<group>"; };
 		6D5958B91C96F9030022D616 /* UIViewController+Helpers.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "UIViewController+Helpers.swift"; sourceTree = "<group>"; };
 		6DFE8A461C9802C900E6DA5C /* ReadMe.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = ReadMe.md; sourceTree = "<group>"; };
 		6DFE8A471C9803ED00E6DA5C /* License.txt */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = License.txt; sourceTree = "<group>"; };
@@ -130,7 +126,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				6D5958B31C96F5C00022D616 /* ActionSheetController.framework in Frameworks */,
-				6D5958B11C96F5AC0022D616 /* AlertPresenter.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -234,8 +229,7 @@
 		6DC548241CB8C41B0081CF28 /* AlertPresenter */ = {
 			isa = PBXGroup;
 			children = (
-				6D5958B01C96F5AC0022D616 /* AlertPresenter.framework */,
-				6D5958B71C96F8740022D616 /* AlertPresenter.swift */,
+				6D5958B71C96F8740022D616 /* QueuedAlertPresenter.swift */,
 				6D5958B91C96F9030022D616 /* UIViewController+Helpers.swift */,
 			);
 			name = AlertPresenter;
@@ -463,7 +457,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6D5958B81C96F8740022D616 /* AlertPresenter.swift in Sources */,
+				6D5958B81C96F8740022D616 /* QueuedAlertPresenter.swift in Sources */,
 				6D59587A1C96DA2C0022D616 /* ViewController.swift in Sources */,
 				6D5958A41C96DEAB0022D616 /* TableViewDelegate.swift in Sources */,
 				6D5958A61C96DEE60022D616 /* TableViewDataSource.swift in Sources */,

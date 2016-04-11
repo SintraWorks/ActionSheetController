@@ -26,11 +26,8 @@
 import UIKit
 
 extension UIViewController {
-    func presentViewControllerOnMainThread(viewControllerToPresent: UIViewController,
-        animated flag: Bool,
-        completion: (() -> Void)?) {
-            dispatch_async(dispatch_get_main_queue()) {
-                self.presentViewController(viewControllerToPresent, animated: flag, completion: completion)
-            }
+    func presentViewControllerOnMainThread(viewControllerToPresent: UIViewController, animated flag: Bool, completion: (() -> Void)?) {
+        let op = NSBlockOperation(block: { self.presentViewController(viewControllerToPresent, animated: flag, completion: completion) })
+        NSOperationQueue.mainQueue().addOperation(op)
     }
 }

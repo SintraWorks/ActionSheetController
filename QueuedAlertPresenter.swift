@@ -1,5 +1,5 @@
 //
-//  AlertPresenter.swift
+//  QueuedAlertPresenter.swift
 //  RandomReminders
 //
 //  Created by Antonio Nunes on 29/02/16.
@@ -9,8 +9,8 @@
 //  of this software and associated documentation files (the "Software"), to deal
 //  in the Software without restriction, including without limitation the rights
 //  to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-//  copies of the Software, and to permit persons to whom the Software is
-//  do so, subject to the following conditions:
+//  copies of the Software, and to permit persons to whom the Software is furnished
+//  to do so, subject to the following conditions:
 //
 //  The above copyright notice and this permission notice shall be included in
 //  all copies or substantial portions of the Software.
@@ -64,7 +64,7 @@ public struct AlertInfo {
     var style: UIAlertControllerStyle
     var actions: [AlertAction]?
     
-    /** 
+    /**
      Initializes an AlertInfo instance with the passed in values. All parameteres have default values, so pass only those you need.
      - title: Optional title for the alert. Defaults to an empty string.
      - message: Optional message body for the alert. Defaults to an empty string
@@ -81,23 +81,26 @@ public struct AlertInfo {
 
 
 /**
- An AlertPresenter serializes the presentation of alerts. Use it when your code needs to present alerts in rapid succession, where the user won't be able to keep up with the alerts.
+ A QueuedAlertPresenter serializes the presentation of alerts. Use it when your code needs to present alerts in rapid succession, where the user may not be able to keep up with the alerts.
  
- Using AlertPresenter instead of UIAlertController directly, ensures your user gets to see all the alerts your code creates.
+ Using QueuedAlertPresenter instead of UIAlertController directly, ensures your user gets to see all the alerts your code creates.
  
  To present an alert create an instance of AlertInfo then add it to the sharedAlertPresenter with addAlert(alertInfo).
  AlertInfo holds the information for an individual alert you want to present.
  */
-public class AlertPresenter {
-    public static let sharedAlertPresenter = AlertPresenter()
+public class QueuedAlertPresenter {
+    public static let sharedAlertPresenter = QueuedAlertPresenter()
     
-    var queuedAlerts = [AlertInfo]()
-    var presentedAlert: AlertInfo?
+    private var queuedAlerts = [AlertInfo]()
+    private var presentedAlert: AlertInfo?
     
     /**
      Adds an alert to the alert queue, and triggers presentation of the queued alerts.
      */
     public func addAlert(alertInfo: AlertInfo) {
+        objc_sync_enter(self)
+        defer { objc_sync_exit(self) }
+        
         self.queuedAlerts.append(alertInfo)
         self.presentAlerts()
     }
@@ -135,22 +138,23 @@ public class AlertPresenter {
                 alertAction.enabled = infoAction.enabled
                 alertController.addAction(alertAction)
                 
-                if infoAction.isPreferredAction {
-                    alertController.preferredAction = alertAction
+                if #available(iOS 9.0, *) {
+                    if infoAction.isPreferredAction {
+                        alertController.preferredAction = alertAction
+                    }
                 }
             }
         }
         
-        self.presentableViewController.presentViewControllerOnMainThread(alertController, animated: true, completion: nil)
+        self.validViewControllerForPresentation.presentViewControllerOnMainThread(alertController, animated: true, completion: nil)
     }
     
-    // Ensure we present on a view controller that is not being dismissed, nor is presenting another view controller.
-    private var presentableViewController: UIViewController {
+    
+    // Ensure we present on a view controller that is neither being dismissed, nor presenting another view controller.
+    private var validViewControllerForPresentation: UIViewController {
         guard let rootViewController = UIApplication.sharedApplication().keyWindow?.rootViewController else { fatalError("There is no root view controller on the key window") }
-        guard var presentedViewController = rootViewController.presentedViewController else {
-            return rootViewController
-        }
-
+        guard var presentedViewController = rootViewController.presentedViewController else { return rootViewController }
+        
         while let candidate = presentedViewController.presentedViewController {
             presentedViewController = candidate
         }
@@ -159,7 +163,7 @@ public class AlertPresenter {
             guard let ancestor = presentedViewController.presentingViewController else { fatalError("Exhausted view controller hierarchy, while looking for a controller that is not being dismissed") }
             presentedViewController = ancestor
         }
-
+        
         return presentedViewController
     }
 }
