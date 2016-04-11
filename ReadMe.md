@@ -51,6 +51,9 @@ Presenting the controller is pretty standard:
 ###Presentation Style
 ActionSheetController can be presented as a popover on iPad, and it has a light and a dark theme, suitable for different context, and/or personal preference.
 
+###Integration
+To use ActionSheetController simply drag the files ActionSheetController.swift and ActionSheetControllerAction.swift into your project.
+
 ###Requirements
 
 | Compile Time  | Runtime       |
