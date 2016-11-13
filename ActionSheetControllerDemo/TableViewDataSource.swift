@@ -27,46 +27,46 @@ import UIKit
 
 
 enum RowIdentifier: Int {
-    case CustomView, BlackCustomView, DatePickerView, TransparentBackground, NoBackgroundTaps, GroupedActions, GroupedActionsBlack
+    case customView, blackCustomView, datePickerView, transparentBackground, noBackgroundTaps, groupedActions, groupedActionsBlack
     
     func description() -> String {
         switch self {
-        case .CustomView:
+        case .customView:
             return "Custom"
-        case .BlackCustomView:
+        case .blackCustomView:
             return "Custom, Black"
-        case .DatePickerView:
+        case .datePickerView:
             return "Date Picker"
-        case TransparentBackground:
+        case .transparentBackground:
             return "Transparent Background and Image button"
-        case NoBackgroundTaps:
+        case .noBackgroundTaps:
             return "No Background Taps"
-        case GroupedActions:
+        case .groupedActions:
             return "Grouped Actions"
-        case GroupedActionsBlack:
+        case .groupedActionsBlack:
             return "Grouped Actions Black"
         }
     }
     
     static var count: Int = {
-        return GroupedActionsBlack.rawValue + 1 }()
+        return groupedActionsBlack.rawValue + 1 }()
 }
 
 
 class TableViewDataSource: NSObject {
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    func numberOfSectionsInTableView(_ tableView: UITableView) -> Int {
         return 1
     }
     
     
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return RowIdentifier.count
     }
     
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
-        guard let cell = tableView.dequeueReusableCellWithIdentifier("Cell") else { return UITableViewCell(style: .Default, reuseIdentifier: "Cell") }
-        guard let item = RowIdentifier(rawValue: indexPath.row) else { fatalError("Illegal row index") }
+    func tableView(_ tableView: UITableView, cellForRowAtIndexPath indexPath: IndexPath) -> UITableViewCell {
+        guard let cell = tableView.dequeueReusableCell(withIdentifier: "Cell") else { return UITableViewCell(style: .default, reuseIdentifier: "Cell") }
+        guard let item = RowIdentifier(rawValue: (indexPath as NSIndexPath).row) else { fatalError("Illegal row index") }
         
         cell.textLabel?.text = item.description()
         

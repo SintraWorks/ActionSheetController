@@ -73,10 +73,10 @@ public class ActionSheetControllerAction {
         if self.dismissesActionController {
             // Important to call the handler *after* dismissing the view controller, since we need to be able to detect whether the current controller is being dismissed, to decide how to present the next view controller.
             self.handler = { controller in
-                if controller.modalPresentationStyle == .Popover || controller.animationConstraint != nil {
-                    controller.dismissViewControllerAnimated(true, completion:nil)
+                if controller.modalPresentationStyle == .popover || controller.animationConstraint != nil {
+                    controller.dismiss(animated: true, completion:nil)
                 } else {
-                    controller.dismissViewControllerAnimated(false, completion:nil)
+                    controller.dismiss(animated: false, completion:nil)
                 }
                 
                 if let handler = handler {
@@ -105,51 +105,51 @@ public class ActionSheetControllerAction {
             }
         }
         
-        let systemButton = UIButton(type: .System)
+        let systemButton = UIButton(type: .system)
         let defaultSystemColor = systemButton.titleLabel?.textColor
         
-        let buttonType: UIButtonType = controller.blurEffectsDisabled ? .System : .Custom;
+        let buttonType: UIButtonType = controller.blurEffectsDisabled ? .system : .custom;
         let actionButton = UIButton(type: buttonType)
         actionButton.translatesAutoresizingMaskIntoConstraints = false
         //        actionButton.backgroundColor = ClearColor// contextAwareBackgroundColor()
-        actionButton.addTarget(self, action: #selector(ActionSheetControllerAction.viewTapped), forControlEvents: .TouchUpInside)
+        actionButton.addTarget(self, action: #selector(ActionSheetControllerAction.viewTapped), for: .touchUpInside)
         
         if self.style == .Cancel {
-            actionButton.titleLabel?.font = UIFont.boldSystemFontOfSize(UIFont.buttonFontSize())
+            actionButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: UIFont.buttonFontSize)
         } else {
-            actionButton.titleLabel?.font = UIFont.systemFontOfSize(UIFont.buttonFontSize())
+            actionButton.titleLabel?.font = UIFont.systemFont(ofSize: UIFont.buttonFontSize)
         }
         
         if let controller = self.controller {
             if !controller.blurEffectsDisabled {
-                actionButton.setBackgroundImage(self.imageWithColor(UIColor(white: 1.0, alpha: 0.3)), forState: .Highlighted)
+                actionButton.setBackgroundImage(self.imageWithColor(color: UIColor(white: 1.0, alpha: 0.3)), for: .highlighted)
             } else {
                 switch controller.style {
                 case .Light:
-                    actionButton.setBackgroundImage(self.imageWithColor(UIColor(white: 0.9, alpha: 1.0)), forState: .Highlighted)
+                    actionButton.setBackgroundImage(self.imageWithColor(color: UIColor(white: 0.9, alpha: 1.0)), for: .highlighted)
                     break;
                 case .Dark:
-                    actionButton.setBackgroundImage(self.imageWithColor(UIColor(white: 0.2, alpha: 1.0)), forState: .Highlighted)
+                    actionButton.setBackgroundImage(self.imageWithColor(color: UIColor(white: 0.2, alpha: 1.0)), for: .highlighted)
                     break;
                 }
             }
         }
         
         if let title = self.title {
-            actionButton.setTitle(title, forState: .Normal)
+            actionButton.setTitle(title, for: .normal)
         } else if let image = self.image {
-            actionButton.setImage(image, forState: .Normal)
+            actionButton.setImage(image, for: .normal)
         } else {
-            actionButton.setTitle("Untitled", forState: .Normal)
+            actionButton.setTitle("Untitled", for: .normal)
         }
         
-        actionButton.heightAnchor.constraintEqualToConstant(StackViewRowHeightAnchorConstraint).active = true
+        actionButton.heightAnchor.constraint(equalToConstant: StackViewRowHeightAnchorConstraint).isActive = true
         
         if self.style == .Destructive {
-            actionButton.setTitleColor(UIColor.redColor(), forState: .Normal)
+            actionButton.setTitleColor(UIColor.red, for: .normal)
         } else {
-            if let controller = self.controller where controller.blurEffectsDisabled == false {
-                actionButton.setTitleColor(defaultSystemColor, forState: .Normal)
+            if let controller = self.controller, controller.blurEffectsDisabled == false {
+                actionButton.setTitleColor(defaultSystemColor, for: .normal)
             }
         }
         
@@ -165,7 +165,7 @@ public class ActionSheetControllerAction {
     }
     
     private func imageWithColor(color: UIColor) -> UIImage {
-        let rect = CGRectMake(0, 0, 1, 1)
+        let rect = CGRect(x: 0.0, y: 0.0, width: 1.0, height: 1.0)
         
         UIGraphicsBeginImageContextWithOptions(rect.size, false, 0)
         color.setFill()
@@ -173,7 +173,7 @@ public class ActionSheetControllerAction {
         let image = UIGraphicsGetImageFromCurrentImageContext()
         UIGraphicsEndImageContext()
         
-        return image
+        return image!
     }
 }
 
@@ -205,7 +205,7 @@ public class GroupedActionSheetControllerAction: ActionSheetControllerAction {
         }
     }
     
-    private override func loadView() -> UIView {
+    private func loadView() -> UIView {
         guard let controller = self.controller else { fatalError("Controller not set when loading view on an GroupedActionSheetControllerAction") }
         func contextAwareBackgroundColor() -> UIColor {
             switch controller.style {
@@ -216,28 +216,28 @@ public class GroupedActionSheetControllerAction: ActionSheetControllerAction {
             }
         }
         
-        let stackView = UIStackView(frame: CGRectZero)
-        stackView.axis = .Horizontal
+        let stackView = UIStackView(frame: CGRect.zero)
+        stackView.axis = .horizontal
         
-        let separatorViewWidth: CGFloat = 1.0 / UIScreen.mainScreen().scale
+        let separatorViewWidth: CGFloat = 1.0 / UIScreen.main.scale
         func separatorView() -> UIView {
-            let separatorView = UIView(frame: CGRectZero)
-            separatorView.backgroundColor = UIColor.darkGrayColor()
-            separatorView.widthAnchor.constraintEqualToConstant(separatorViewWidth).active = true
-            separatorView.setContentHuggingPriority(UILayoutPriorityRequired, forAxis: .Horizontal)
+            let separatorView = UIView(frame: CGRect.zero)
+            separatorView.backgroundColor = UIColor.darkGray
+            separatorView.widthAnchor.constraint(equalToConstant: separatorViewWidth).isActive = true
+            separatorView.setContentHuggingPriority(UILayoutPriorityRequired, for: .horizontal)
             return separatorView
         }
         
         var precedingActionView: UIView? = nil
         for action in self.actions {
-            action.view.setContentHuggingPriority(UILayoutPriorityDefaultLow, forAxis:.Horizontal)
+            action.view.setContentHuggingPriority(UILayoutPriorityDefaultLow, for:.horizontal)
             stackView.addArrangedSubview(action.view)
             if action !== self.actions.last {
                 stackView.addArrangedSubview(separatorView())
             }
             
             if let precedingView = precedingActionView {
-                action.view.widthAnchor.constraintEqualToAnchor(precedingView.widthAnchor).active = true
+                action.view.widthAnchor.constraint(equalTo: precedingView.widthAnchor).isActive = true
             }
             
             precedingActionView = action.view

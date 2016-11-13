@@ -34,37 +34,37 @@ class TableViewDelegate: NSObject {
     
     var pickerViewDataSourceAndDelegate: UIPickerViewDelegate = PickerDataSourceAndDelegate()
     
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        tableView.deselectRowAtIndexPath(indexPath, animated: true)
+    func tableView(_ tableView: UITableView, didSelectRowAtIndexPath indexPath: IndexPath) {
+        tableView.deselectRow(at: indexPath, animated: true)
         
-        let rowIdentifier = self.rowIdentifierFromRowIndex(indexPath.row)
+        let rowIdentifier = self.rowIdentifierFromRowIndex((indexPath as NSIndexPath).row)
         
         var sheetController: ActionSheetController
         
         switch rowIdentifier {
-        case .CustomView:
+        case .customView:
             sheetController = self.customSheet(.Light)
-        case .BlackCustomView:
+        case .blackCustomView:
             sheetController = self.customSheet(.Dark)
-        case .DatePickerView:
+        case .datePickerView:
             sheetController = self.datePickerSheet()
-        case .TransparentBackground:
+        case .transparentBackground:
             sheetController = self.transparentBackgroundSheet()
-        case .NoBackgroundTaps:
+        case .noBackgroundTaps:
             sheetController = self.noBackgroundTapsSheet()
-        case .GroupedActions:
+        case .groupedActions:
             sheetController = self.groupedActionsSheet()
-        case .GroupedActionsBlack:
+        case .groupedActionsBlack:
             sheetController = self.groupedActionsSheet(.Dark)
         }
         
-        self.controller.presentViewController(sheetController, animated: true, completion: nil)
+        self.controller.present(sheetController, animated: true, completion: nil)
     }
 }
 
 
 extension TableViewDelegate {
-    internal func rowIdentifierFromRowIndex(rowIndex: Int) -> RowIdentifier {
+    internal func rowIdentifierFromRowIndex(_ rowIndex: Int) -> RowIdentifier {
         guard let identifier = RowIdentifier(rawValue: rowIndex) else { fatalError("Invalid section") }
         return identifier
     }
@@ -72,25 +72,25 @@ extension TableViewDelegate {
 
 
 extension TableViewDelegate {
-    private func customSheet(style: ActionSheetControllerStyle) -> ActionSheetController {
+    fileprivate func customSheet(_ style: ActionSheetControllerStyle) -> ActionSheetController {
         let cancelAction = ActionSheetControllerAction(style: .Cancel, title: "Cancel", dismissesActionController: true, handler: nil)
         let sheetController = ActionSheetController(style: style, title: "Hi there", message: "I'm a simple sheet boasting a custom view as my content view.", cancelAction: cancelAction, okAction: nil)
 
-        let simpleView = CustomView(frame: CGRectZero)
+        let simpleView = CustomView(frame: CGRect.zero)
         simpleView.translatesAutoresizingMaskIntoConstraints = false
-        simpleView.heightAnchor.constraintEqualToConstant(100.0).active = true
+        simpleView.heightAnchor.constraint(equalToConstant: 100.0).isActive = true
         sheetController.contentView = simpleView
         
         return sheetController
     }
 
 
-    private func datePickerSheet() -> ActionSheetController {
-        let pickerView = UIDatePicker(frame: CGRectZero)
+    fileprivate func datePickerSheet() -> ActionSheetController {
+        let pickerView = UIDatePicker(frame: CGRect.zero)
 
         let okAction = ActionSheetControllerAction(style: .Done, title: "OK", dismissesActionController: true) { controller in
             let date = pickerView.date
-            let action = AlertAction(title: "Hurray!", style: .Default, enabled: true, isPreferredAction: true) {
+            let action = AlertAction(title: "Hurray!", style: .default, enabled: true, isPreferredAction: true) {
                 print("Dismissed!")
             }
             let alertInfo = AlertInfo(title: "Success", message: "You picked date: \(date.description)", actions: [action])
@@ -106,75 +106,75 @@ extension TableViewDelegate {
     }
     
     
-    private func groupedActionsSheet(style: ActionSheetControllerStyle = .Light) -> ActionSheetController {
+    fileprivate func groupedActionsSheet(_ style: ActionSheetControllerStyle = .Light) -> ActionSheetController {
         let okAction = ActionSheetControllerAction(style: .Done, title: "OK", dismissesActionController: true ) { _ in
             AudioServicesPlaySystemSound(1103)
             let speechsynth = AVSpeechSynthesizer()
             let speechString = "Hey, You pressed OK, and dismissed the Action Sheet!"
             let speech = AVSpeechUtterance(string: speechString)
-            speechsynth.speakUtterance(speech)
+            speechsynth.speak(speech)
         }
         let cancelAction = ActionSheetControllerAction(style: .Cancel, title: "Cancel", dismissesActionController: true, handler: nil)
         let sheetController = ActionSheetController(style: style, title: "Hi there", message: "I have scores of grouped actions. Ok, well, not scores, but still…\n\nThe Alert Gun fires several alerts in rapid sucession. As you dismiss each alert, the next is shown.", cancelAction: cancelAction, okAction: okAction)
         
         let action1 = ActionSheetControllerAction(style: .Done, title: "Action 1", dismissesActionController: false) { controller in
-            let action = AlertAction(title: "Hit me", style: .Default, enabled: true, isPreferredAction: true, handler: nil)
+            let action = AlertAction(title: "Hit me", style: .default, enabled: true, isPreferredAction: true, handler: nil)
             let alertInfo = AlertInfo(title: "Success", message: "You picked action 1", actions: [action])
             QueuedAlertPresenter.sharedAlertPresenter.addAlert(alertInfo)
         }
 
         let action2 = ActionSheetControllerAction(style: .Additional, title: "Action 2", dismissesActionController: false) { controller in
-            let action = AlertAction(title: "Hit me too", style: .Default, enabled: true, isPreferredAction: true, handler: nil)
+            let action = AlertAction(title: "Hit me too", style: .default, enabled: true, isPreferredAction: true, handler: nil)
             let alertInfo = AlertInfo(title: "Success", message: "You picked action 2", actions: [action])
             QueuedAlertPresenter.sharedAlertPresenter.addAlert(alertInfo)
         }
 
         let action3 = ActionSheetControllerAction(style: .Additional, title: "Action 3", dismissesActionController: false) { controller in
-            let action = AlertAction(title: "Allright already!", style: .Default, enabled: true, isPreferredAction: true, handler: nil)
+            let action = AlertAction(title: "Allright already!", style: .default, enabled: true, isPreferredAction: true, handler: nil)
             let alertInfo = AlertInfo(title: "Success", message: "You picked action 3", actions: [action])
             QueuedAlertPresenter.sharedAlertPresenter.addAlert(alertInfo)
         }
 
         let groupedAction = GroupedActionSheetControllerAction(style: .Additional, actions: [action1, action2, action3])
-        sheetController.addAction(groupedAction)
+        sheetController.add(action: groupedAction)
 
         let action4 = ActionSheetControllerAction(style: .Destructive, title: "Alert Gun", dismissesActionController: false) { controller in
             for i in 1...5 {
-                let action = AlertAction(title: (i == 5) ? "Stop it!" : String(i), style: .Default, enabled: true, isPreferredAction: false, handler: nil)
+                let action = AlertAction(title: (i == 5) ? "Stop it!" : String(i), style: .default, enabled: true, isPreferredAction: false, handler: nil)
                 let alertInfo = AlertInfo(title: "Success", message: "You engaged the alert gun. This is alert number \(String(i)).", actions: [action])
                 QueuedAlertPresenter.sharedAlertPresenter.addAlert(alertInfo)
             }
         }
-        sheetController.addAction(action4)
+        sheetController.add(action: action4)
 
-        let label = UILabel(frame: CGRectZero)//CustomGrayView(frame: CGRectZero)
+        let label = UILabel(frame: CGRect.zero)//CustomGrayView(frame: CGRectZero)
         sheetController.contentView = label
-        sheetController.contentView?.heightAnchor.constraintEqualToConstant(80.0).active = true
+        sheetController.contentView?.heightAnchor.constraint(equalToConstant: 80.0).isActive = true
         label.text = "I'm not a button. I'm the content view.."
-        label.textAlignment = .Center
+        label.textAlignment = .center
         label.adjustsFontSizeToFitWidth = true
         
         if style == .Dark {
-            label.textColor = UIColor.lightTextColor()
+            label.textColor = UIColor.lightText
         } else {
-            label.textColor = UIColor.darkTextColor()
+            label.textColor = UIColor.darkText
         }
         
         return sheetController
    
     }
     
-    private func transparentBackgroundSheet() -> ActionSheetController {
-        let pickerView = UIPickerView(frame: CGRectZero)
+    fileprivate func transparentBackgroundSheet() -> ActionSheetController {
+        let pickerView = UIPickerView(frame: CGRect.zero)
         pickerView.delegate = self.pickerViewDataSourceAndDelegate
         
         let okAction = ActionSheetControllerAction(style: .Done, image: UIImage(named: "shuffle"), dismissesActionController: true) { controller in
             var s = String()
             for comp in 0..<6 {
                 let offset = (comp == 0) ? 97 - 32 : 97
-                s.append(UnicodeScalar(offset + pickerView.selectedRowInComponent(comp)))
+                s.append(String(describing: UnicodeScalar(UInt8(offset + pickerView.selectedRow(inComponent:comp)))))
             }
-            let action = AlertAction(title: "It's Poetry :-)", style: .Default, enabled: true, isPreferredAction: true, handler: nil)
+            let action = AlertAction(title: "It's Poetry :-)", style: .default, enabled: true, isPreferredAction: true, handler: nil)
             let alertInfo = AlertInfo(title: "Fantastic", message: "You wrote: \(s)", actions: [action])
             QueuedAlertPresenter.sharedAlertPresenter.addAlert(alertInfo)
         }
@@ -189,12 +189,12 @@ extension TableViewDelegate {
     }
 
 
-    private func noBackgroundTapsSheet() -> ActionSheetController {
-        let pickerView = UIDatePicker(frame: CGRectZero)
+    fileprivate func noBackgroundTapsSheet() -> ActionSheetController {
+        let pickerView = UIDatePicker(frame: CGRect.zero)
         
         let okAction = ActionSheetControllerAction(style: .Done, title: "OK", dismissesActionController: true) { controller in
             let date = pickerView.date
-            let action = AlertAction(title: "Hurray!", style: .Default, enabled: true, isPreferredAction: true) {
+            let action = AlertAction(title: "Hurray!", style: .default, enabled: true, isPreferredAction: true) {
                 print("Dismissed!")
             }
             let alertInfo = AlertInfo(title: "Success", message: "You picked date: \(date.description)", actions: [action])
@@ -215,29 +215,29 @@ extension TableViewDelegate {
 
 
 class CustomView: UIView {
-    override func drawRect(rect: CGRect) {
-        UIColor.yellowColor().colorWithAlphaComponent(0.8).setFill()
-        UIRectFillUsingBlendMode(self.bounds, .Screen)
+    override func draw(_ rect: CGRect) {
+        UIColor.yellow.withAlphaComponent(0.8).setFill()
+        UIRectFillUsingBlendMode(self.bounds, .screen)
         
-        UIColor.blueColor().setStroke()
-        let path = UIBezierPath(ovalInRect: CGRectInset(self.bounds, 20.0, 30.0))
+        UIColor.blue.setStroke()
+        let path = UIBezierPath(ovalIn: self.bounds.insetBy(dx: 20.0, dy: 30.0))
         path.stroke()
     }
 }
 
 
 class PickerDataSourceAndDelegate: NSObject, UIPickerViewDataSource, UIPickerViewDelegate {
-    func numberOfComponentsInPickerView(pickerView: UIPickerView) -> Int {
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 6
     }
     
     
-    func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
         return 26
     }
 
     
-    func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        return (component == 0) ? String(UnicodeScalar(97 - 32 + row)) : String(UnicodeScalar(97 + row))
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        return (component == 0) ? String(describing: UnicodeScalar(UInt8(97 - 32 + row))) : String(describing: UnicodeScalar(UInt8(97 + row)))
     }
 }

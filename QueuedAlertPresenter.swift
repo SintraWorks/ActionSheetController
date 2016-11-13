@@ -45,7 +45,7 @@ public struct AlertAction {
      - isPreferredAction: Whether the action is the preferred action of the alert. Defaults to false.
      - handler: Optional closure containing code to execute when the action is clicked.
      */
-    public init(title: String = "", style: UIAlertActionStyle = .Default, enabled: Bool = true, isPreferredAction: Bool = false, handler: AlertActionHandler? = nil) {
+    public init(title: String = "", style: UIAlertActionStyle = .default, enabled: Bool = true, isPreferredAction: Bool = false, handler: AlertActionHandler? = nil) {
         self.title = title
         self.style = style
         self.enabled = enabled
@@ -71,7 +71,7 @@ public struct AlertInfo {
      - style: Alert style (UIAlertControllerStyle). Defaults to .Alert
      - actions: Optional array of AlertActions. Defaults to nil.
      */
-    public init(title: String? = "", message: String? = "", style: UIAlertControllerStyle = .Alert, actions: [AlertAction]? = nil) {
+    public init(title: String? = "", message: String? = "", style: UIAlertControllerStyle = .alert, actions: [AlertAction]? = nil) {
         self.title = title
         self.message = message
         self.style = style
@@ -88,16 +88,16 @@ public struct AlertInfo {
  To present an alert create an instance of AlertInfo then add it to the sharedAlertPresenter with addAlert(alertInfo).
  AlertInfo holds the information for an individual alert you want to present.
  */
-public class QueuedAlertPresenter {
-    public static let sharedAlertPresenter = QueuedAlertPresenter()
+open class QueuedAlertPresenter {
+    open static let sharedAlertPresenter = QueuedAlertPresenter()
     
-    private var queuedAlerts = [AlertInfo]()
-    private var presentedAlert: AlertInfo?
+    fileprivate var queuedAlerts = [AlertInfo]()
+    fileprivate var presentedAlert: AlertInfo?
     
     /**
      Adds an alert to the alert queue, and triggers presentation of the queued alerts.
      */
-    public func addAlert(alertInfo: AlertInfo) {
+    open func addAlert(_ alertInfo: AlertInfo) {
         objc_sync_enter(self)
         defer { objc_sync_exit(self) }
         
@@ -110,7 +110,7 @@ public class QueuedAlertPresenter {
      
      - Returns: true if an alert was presented, false if no alert was presented.
      */
-    private func presentAlerts() -> Bool {
+    @discardableResult fileprivate func presentAlerts() -> Bool {
         if self.presentedAlert == nil {
             if let alertToPresent = self.queuedAlerts.first {
                 self.presentedAlert = alertToPresent
@@ -122,7 +122,7 @@ public class QueuedAlertPresenter {
     }
     
     
-    private func presentAlert(alertInfo :AlertInfo) {
+    fileprivate func presentAlert(_ alertInfo :AlertInfo) {
         let alertController = UIAlertController(title: alertInfo.title, message:alertInfo.message, preferredStyle: alertInfo.style)
         
         if let actions = alertInfo.actions {
@@ -135,7 +135,7 @@ public class QueuedAlertPresenter {
                     self.presentAlerts()
                 }
                 
-                alertAction.enabled = infoAction.enabled
+                alertAction.isEnabled = infoAction.enabled
                 alertController.addAction(alertAction)
                 
                 if #available(iOS 9.0, *) {
@@ -151,15 +151,15 @@ public class QueuedAlertPresenter {
     
     
     // Ensure we present on a view controller that is neither being dismissed, nor presenting another view controller.
-    private var validViewControllerForPresentation: UIViewController {
-        guard let rootViewController = UIApplication.sharedApplication().keyWindow?.rootViewController else { fatalError("There is no root view controller on the key window") }
+    fileprivate var validViewControllerForPresentation: UIViewController {
+        guard let rootViewController = UIApplication.shared.keyWindow?.rootViewController else { fatalError("There is no root view controller on the key window") }
         guard var presentedViewController = rootViewController.presentedViewController else { return rootViewController }
         
         while let candidate = presentedViewController.presentedViewController {
             presentedViewController = candidate
         }
         
-        while presentedViewController.isBeingDismissed() {
+        while presentedViewController.isBeingDismissed {
             guard let ancestor = presentedViewController.presentingViewController else { fatalError("Exhausted view controller hierarchy, while looking for a controller that is not being dismissed") }
             presentedViewController = ancestor
         }
