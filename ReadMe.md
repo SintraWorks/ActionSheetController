@@ -9,6 +9,7 @@ AcionSheetController is an iOS control for presenting a view in an iOS action sh
 ![Buttons, dark theme](https://sintraworks.github.io/ActionSheetController/Images/ActionSheetContollerSample3.png)
 
 AcionSheetController is written in **Swift** and was inspired by [RMActionController](https://github.com/CooperRS/RMActionController) by [Roland Moers](https://github.com/CooperRS). AcionSheetController differs in a number of aspects, firstly, of course, by being written in Swift, and also importantly by basing itself on **UIStackView**.
+
 Usage
 ====
 By default ActionSheetController doesn't contain a content view, and will only show buttons for any actions you add. To show a content view you simply set the contentView property to hold the desired view. There is generally no need to subclass ActionSheetController, although you can if you want to.
