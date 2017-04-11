@@ -153,17 +153,13 @@ open class QueuedAlertPresenter {
     // Ensure we present on a view controller that is neither being dismissed, nor presenting another view controller.
     fileprivate var validViewControllerForPresentation: UIViewController {
         guard let rootViewController = UIApplication.shared.keyWindow?.rootViewController else { fatalError("There is no root view controller on the key window") }
-        guard var presentedViewController = rootViewController.presentedViewController else { return rootViewController }
+        var validController = UIViewController.topViewControllerForViewController(rootViewController)
         
-        while let candidate = presentedViewController.presentedViewController {
-            presentedViewController = candidate
+        while validController.isBeingDismissed {
+            guard let ancestor = validController.presentingViewController else { fatalError("Exhausted view controller hierarchy, while looking for a controller that is not being dismissed") }
+            validController = ancestor
         }
         
-        while presentedViewController.isBeingDismissed {
-            guard let ancestor = presentedViewController.presentingViewController else { fatalError("Exhausted view controller hierarchy, while looking for a controller that is not being dismissed") }
-            presentedViewController = ancestor
-        }
-        
-        return presentedViewController
+        return validController
     }
 }

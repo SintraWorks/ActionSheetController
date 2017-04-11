@@ -30,4 +30,26 @@ extension UIViewController {
         let op = BlockOperation(block: { self.present(viewControllerToPresent, animated: flag, completion: completion) })
         OperationQueue.main.addOperation(op)
     }
+    
+    class func topViewControllerForViewController(_ queryBaseController: UIViewController) -> UIViewController {
+        var targetController = queryBaseController
+        var currentController: UIViewController? = targetController
+        
+        repeat {
+            switch currentController {
+            case let navigationController as UINavigationController:
+                currentController = navigationController.viewControllers.last
+            case let tabBarController as UITabBarController:
+                currentController = tabBarController.selectedViewController
+            default:
+                currentController = targetController.presentedViewController
+            }
+            
+            if let currentController = currentController {
+                targetController = currentController
+            }
+        } while currentController != nil
+        
+        return targetController
+    }    
 }
