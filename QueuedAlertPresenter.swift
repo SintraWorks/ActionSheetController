@@ -39,7 +39,7 @@ public struct AlertAction {
     var isPreferredAction: Bool
     
     /**
-     Initializes an AlertAction instance with the passed in values. All parameteres have default values, so pass only those you need.
+     Initializes an AlertAction instance with the passed in values. All parameters have default values, so pass only those you need.
      - title: Optional title for the action. Defaults to an empty string.
      - style: Alert style (UIAlertActionStyle). Defaults to .Default
      - isPreferredAction: Whether the action is the preferred action of the alert. Defaults to false.
@@ -111,12 +111,11 @@ open class QueuedAlertPresenter {
      - Returns: true if an alert was presented, false if no alert was presented.
      */
     @discardableResult fileprivate func presentAlerts() -> Bool {
-        if self.presentedAlert == nil {
-            if let alertToPresent = self.queuedAlerts.first {
-                self.presentedAlert = alertToPresent
-                self.presentAlert(alertToPresent)
-                return true
-            }
+        if self.presentedAlert == nil,
+            let alertToPresent = self.queuedAlerts.first {
+            self.presentedAlert = alertToPresent
+            self.presentAlert(alertToPresent)
+            return true
         }
         return false
     }

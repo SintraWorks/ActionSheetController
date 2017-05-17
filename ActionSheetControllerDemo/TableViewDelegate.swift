@@ -56,6 +56,8 @@ class TableViewDelegate: NSObject {
             sheetController = self.groupedActionsSheet()
         case .groupedActionsBlack:
             sheetController = self.groupedActionsSheet(.Dark)
+        case .viewController:
+            sheetController = self.viewControllerSheet()
         }
         
         self.controller.present(sheetController, animated: true, completion: nil)
@@ -210,6 +212,28 @@ extension TableViewDelegate {
         return sheetController
     }
 
+    fileprivate func viewControllerSheet() -> ActionSheetController {
+        let viewController = CustomViewController()
+        
+        let okAction = ActionSheetControllerAction(style: .Done, title: "OK", dismissesActionController: true) { controller in
+            let date = viewController.pickerView.date
+            let action = AlertAction(title: "Hurray!", style: .default, enabled: true, isPreferredAction: true) {
+                print("Dismissed!")
+            }
+            let alertInfo = AlertInfo(title: "Success", message: "You picked date: \(date.description)", actions: [action])
+            QueuedAlertPresenter.sharedAlertPresenter.addAlert(alertInfo)
+        }
+        
+        let cancelAction = ActionSheetControllerAction(style: .Cancel, title: "Cancel", dismissesActionController: true) { controller in
+            print("Canceled!")
+        }
+        let sheetController = ActionSheetController(title: "Date Picker in Custom View Controller", message: "Pick a date for no particular reason…", cancelAction: cancelAction, okAction: okAction)
+        
+        sheetController.contentViewController = viewController
+        
+        return sheetController
+    }
+
 }
 
 
@@ -239,5 +263,19 @@ class PickerDataSourceAndDelegate: NSObject, UIPickerViewDataSource, UIPickerVie
     
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         return (component == 0) ? String(describing: UnicodeScalar(UInt8(97 - 32 + row))) : String(describing: UnicodeScalar(UInt8(97 + row)))
+    }
+}
+
+// MARK: - Custom View Controller
+class CustomViewController: UIViewController {
+    let pickerView = UIDatePicker(frame: CGRect(x: 0.0, y: 0.0, width: 100.0, height: 200.0))
+
+    override func viewDidLoad() {
+        pickerView.translatesAutoresizingMaskIntoConstraints = false
+        view.addSubview(pickerView)
+        pickerView.topAnchor.constraint(equalTo: view.topAnchor).isActive = true
+        pickerView.leftAnchor.constraint(equalTo: view.leftAnchor).isActive = true
+        pickerView.rightAnchor.constraint(equalTo: view.rightAnchor).isActive = true
+        pickerView.bottomAnchor.constraint(equalTo: view.bottomAnchor).isActive = true
     }
 }

@@ -27,29 +27,31 @@ import UIKit
 
 
 enum RowIdentifier: Int {
-    case customView, blackCustomView, datePickerView, transparentBackground, noBackgroundTaps, groupedActions, groupedActionsBlack
+    case customView, blackCustomView, datePickerView, transparentBackground, noBackgroundTaps, groupedActions, groupedActionsBlack, viewController
     
     func description() -> String {
         switch self {
         case .customView:
-            return "Custom"
+            return "Custom View"
         case .blackCustomView:
-            return "Custom, Black"
+            return "Custom View, Black"
         case .datePickerView:
-            return "Date Picker"
+            return "Date Picker View"
         case .transparentBackground:
-            return "Transparent Background and Image button"
+            return "Transparent Background and Image Button View"
         case .noBackgroundTaps:
-            return "No Background Taps"
+            return "No Background Taps View"
         case .groupedActions:
-            return "Grouped Actions"
+            return "Grouped Actions View"
         case .groupedActionsBlack:
-            return "Grouped Actions Black"
+            return "Grouped Actions View Black"
+        case .viewController:
+            return "Custom View Controller"
         }
     }
     
     static var count: Int = {
-        return groupedActionsBlack.rawValue + 1 }()
+        return viewController.rawValue + 1 }()
 }
 
 

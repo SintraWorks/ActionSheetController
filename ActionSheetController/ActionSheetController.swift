@@ -72,7 +72,7 @@ public class ActionSheetController: UIViewController, UIViewControllerTransition
     
     var animationConstraint: NSLayoutConstraint?
     
-    lazy fileprivate var backgroundView: UIView = {
+    lazy internal var backgroundView: UIView = {
         var backgroundView: UIView? = nil
         if self.blurEffectsDisabled {
             backgroundView = UIView(frame: CGRect.zero)
@@ -109,6 +109,7 @@ public class ActionSheetController: UIViewController, UIViewControllerTransition
     
     /// Set the contentView to hold the view you want to display. If you need only buttons, do not set the content view.
     public var contentView: UIView?
+    public var contentViewController: UIViewController?
     
     /// Returns a UIView to be used as a separator row between the top and bottom stack views.
     private func interStackViewSeparatorView() -> UIView {
@@ -155,7 +156,6 @@ public class ActionSheetController: UIViewController, UIViewControllerTransition
         
         return roundedCornerContainerView
     }
-    
     
     private var contextAwareLightColor: UIColor {
         return self.blurEffectsDisabled ? LightColor : TransparentLightColor
@@ -215,7 +215,6 @@ public class ActionSheetController: UIViewController, UIViewControllerTransition
         return separatorView
     }
     
-    
     /// Initializer. Style defaults to White. Generally you will want to pass in at least a title and/or a message.
     /// Pass in any of the other arguments as needed. If you want to add more actions than the Cancel and/or OK actions, you can do so after instantiation.
     /// - Parameter style: The controller's style. Either White or Black.
@@ -252,7 +251,6 @@ public class ActionSheetController: UIViewController, UIViewControllerTransition
     
     override public func viewDidLoad() {
         super.viewDidLoad()
-
         self.setupViewHierarchy()
     }
     
@@ -274,7 +272,6 @@ public class ActionSheetController: UIViewController, UIViewControllerTransition
         self.modalPresentationStyle = .overCurrentContext
         self.transitioningDelegate = self // transitioningDelegate is a weak property, so no retain cycle created here.
     }
-    
     
     private func setupViewHierarchy() {
         self.view.backgroundColor = UIColor.clear
@@ -298,7 +295,6 @@ public class ActionSheetController: UIViewController, UIViewControllerTransition
         outerStackView.widthAnchor.constraint(equalTo: self.view.widthAnchor, constant: -20.0).isActive = true
         outerStackView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -8.0).isActive = true
     }
-    
     
     private func setupTopStackView() {
         if self.title != nil || self.message != nil {
@@ -343,8 +339,12 @@ public class ActionSheetController: UIViewController, UIViewControllerTransition
             self.topStackView.addArrangedSubview(separatorView())
         }
         
-        
-        if let middleView = self.contentView {
+        var subview = self.contentView
+        if let contentController = contentViewController {
+            subview = contentController.view
+        }
+
+        if let middleView = subview {
             self.topStackView.addArrangedSubview(middleView)
             self.topStackView.addArrangedSubview(separatorView())
         }
@@ -356,7 +356,6 @@ public class ActionSheetController: UIViewController, UIViewControllerTransition
             }
         }
     }
-    
     
     private func setupBottomStackView() {
         for action in self.cancelActions {
@@ -389,128 +388,4 @@ public class ActionSheetController: UIViewController, UIViewControllerTransition
             self.dismiss(animated: true, completion: nil)
         }
     }
-}
-
-
-fileprivate enum ActionControllerAnimationStyle {
-    case presenting
-    case dismissing
-}
-
-// MARK: - Animation (only on .Phone idiom devices)
-class ActionControllerAnimationController: NSObject, UIViewControllerAnimatedTransitioning {
-    fileprivate var animationStyle: ActionControllerAnimationStyle = .presenting
-    
-    private let longTransitionDuration: TimeInterval = 1.5
-    private let shortTransitionDuration: TimeInterval = 0.3
-    
-    func animateTransition(using transitionContext: UIViewControllerContextTransitioning) {
-        let containerView = transitionContext.containerView
-        
-        if self.animationStyle == .presenting {
-            guard let actionController = transitionContext.viewController(forKey: UITransitionContextViewControllerKey.to) as? ActionSheetController else { return }
-            
-            let effectView = actionController.backgroundView
-            let mainView = actionController.view!
-            
-            // Condition commented out because the effect looks quite bad, even though I think this is how Apple wants us to implement this.
-            // Fading in the background view instead, actually looks good in my tests, but the system logs a warning for doing it.
-            //                    if let effectView = actionController.backgroundView as? UIVisualEffectView {
-            //                        effectView.effect = nil
-            //                    } else {
-            effectView.alpha = 0.0
-            //                    }
-            
-            containerView.addSubview(effectView)
-            effectView.leftAnchor.constraint(equalTo: containerView.leftAnchor).isActive = true
-            effectView.rightAnchor.constraint(equalTo: containerView.rightAnchor).isActive = true
-            effectView.heightAnchor.constraint(equalTo: containerView.heightAnchor).isActive = true
-            effectView.topAnchor.constraint(equalTo: containerView.topAnchor).isActive = true
-            containerView.setNeedsUpdateConstraints()
-            containerView.layoutIfNeeded()
-            
-            if let effectView = effectView as? UIVisualEffectView {
-                effectView.contentView.addSubview(mainView)
-            } else {
-                effectView.addSubview(mainView)
-            }
-            
-            mainView.centerXAnchor.constraint(equalTo: effectView.centerXAnchor).isActive = true
-            mainView.widthAnchor.constraint(equalTo: effectView.widthAnchor).isActive = true
-            mainView.heightAnchor.constraint(equalTo: effectView.heightAnchor).isActive = true
-            let initialConstraint = mainView.topAnchor.constraint(equalTo: effectView.bottomAnchor)
-            initialConstraint.isActive = true
-            effectView.setNeedsUpdateConstraints()
-            effectView.layoutIfNeeded()
-            effectView.removeConstraint(initialConstraint)
-            
-            actionController.animationConstraint = mainView.bottomAnchor.constraint(equalTo: effectView.bottomAnchor)
-            actionController.animationConstraint!.isActive = true
-            
-            containerView.setNeedsUpdateConstraints()
-            
-            var damping: CGFloat = 1.0
-            var duration = shortTransitionDuration
-            if !actionController.bouncingEffectsDisabled {
-                damping = 0.6
-                duration = longTransitionDuration
-            }
-            
-            UIView.animate(withDuration: duration, delay: 0.0, usingSpringWithDamping: damping, initialSpringVelocity: 1.0, options: [.beginFromCurrentState, .allowUserInteraction], animations: { () -> Void in
-                // Condition commented out because the effect looks quite bad, even though I think this is how Apple wants us to implement this.
-                // Fading in the background view instead, actually looks good in my tests, but the system logs a warning for doing it.
-                //                    if let effectView = actionController.backgroundView as? UIVisualEffectView {
-                //                        effectView.effect = UIBlurEffect(style: actionController.backgroundBlurEffectStyleForCurrentStyle)
-                //                    } else {
-                effectView.alpha = 1.0
-                //                    }
-                effectView.layoutIfNeeded()
-                }, completion: { (finished) -> Void in
-                    transitionContext.completeTransition(true)
-            })
-            
-        } else if self.animationStyle == .dismissing {
-            if let actionController = transitionContext.viewController(forKey: UITransitionContextViewControllerKey.from) as? ActionSheetController {
-                let mainView = actionController.view
-                let effectView = actionController.backgroundView
-                
-                effectView.removeConstraint(actionController.animationConstraint!)
-                
-                mainView?.topAnchor.constraint(equalTo: effectView.bottomAnchor).isActive = true
-                containerView.setNeedsUpdateConstraints()
-                
-                UIView.animate(withDuration: shortTransitionDuration, delay: 0, options:[.beginFromCurrentState], animations:{ () -> Void in
-                    // Condition commented out because, the effect looks quite bad, even though I think this is how Apple wants us to implement this.
-                    // Fading in the background view instead, actually looks good in my tests, but the system logs a warning for doing it.
-                    //                    if let effectView = actionController.backgroundView as? UIVisualEffectView {
-                    //                        effectView.effect = nil
-                    //                    } else {
-                    actionController.backgroundView.alpha = 0.0
-                    //                    }
-                    containerView.layoutIfNeeded()
-                    }, completion: { (finished) -> Void in
-                        transitionContext.completeTransition(true)
-                })
-            }
-        }
-    }
-    
-    
-    func transitionDuration(using transitionContext: UIViewControllerContextTransitioning?) -> TimeInterval {
-        if self.animationStyle == .presenting {
-            let toViewController = transitionContext?.viewController(forKey: UITransitionContextViewControllerKey.to)
-            if let actionController = toViewController as? ActionSheetController {
-                if actionController.bouncingEffectsDisabled {
-                    return shortTransitionDuration
-                } else {
-                    return longTransitionDuration
-                }
-            }
-        } else if self.animationStyle == .dismissing {
-            return shortTransitionDuration
-        }
-        
-        return longTransitionDuration
-    }
-    
 }

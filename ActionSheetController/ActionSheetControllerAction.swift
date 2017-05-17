@@ -29,7 +29,7 @@ import UIKit
 
 /// The action style determines the display properties and placement of the action button.
 
-public enum ActionSheetControllerActionStyle {
+public enum ActionSheetControllerActionStyle: Int {
     /// The button is displayed with a regular font and positioned right below the content view.
     case Done
     /// The button is displayed with a bold font and positioned below all done buttons (or the content view if there are no done buttons).
@@ -94,8 +94,32 @@ public class ActionSheetControllerAction {
     }()
     
     
-    private func loadView() -> UIView {
+    fileprivate func loadView() -> UIView {
         guard let controller = self.controller else { fatalError("Controller not set when loading view on an ActionSheetControllerAction") }
+        
+        let actionButton = button(for: controller)
+        
+        if let title = self.title {
+            actionButton.setTitle(title, for: .normal)
+        } else if let image = self.image {
+            actionButton.setImage(image, for: .normal)
+        } else {
+            actionButton.setTitle("Untitled", for: .normal)
+        }
+        
+        if self.style == .Destructive {
+            actionButton.setTitleColor(UIColor.red, for: .normal)
+        } else {
+            let defaultSystemColor = UIButton(type: .system).titleLabel?.textColor
+            if let controller = self.controller, controller.blurEffectsDisabled == false {
+                actionButton.setTitleColor(defaultSystemColor, for: .normal)
+            }
+        }
+        
+        return actionButton;
+    }
+    
+    private func button(for controller: ActionSheetController) -> UIButton {
         func contextAwareBackgroundColor() -> UIColor {
             switch controller.style {
             case .Light:
@@ -104,14 +128,11 @@ public class ActionSheetControllerAction {
                 return controller.blurEffectsDisabled ? DarkColor : TransparentDarkColor
             }
         }
-        
-        let systemButton = UIButton(type: .system)
-        let defaultSystemColor = systemButton.titleLabel?.textColor
-        
-        let buttonType: UIButtonType = controller.blurEffectsDisabled ? .system : .custom;
-        let actionButton = UIButton(type: buttonType)
+
+        let actionButton = UIButton(type: controller.blurEffectsDisabled ? .system : .custom)
         actionButton.translatesAutoresizingMaskIntoConstraints = false
-        //        actionButton.backgroundColor = ClearColor// contextAwareBackgroundColor()
+        actionButton.backgroundColor = contextAwareBackgroundColor()
+
         actionButton.addTarget(self, action: #selector(ActionSheetControllerAction.viewTapped), for: .touchUpInside)
         
         if self.style == .Cancel {
@@ -134,26 +155,10 @@ public class ActionSheetControllerAction {
                 }
             }
         }
-        
-        if let title = self.title {
-            actionButton.setTitle(title, for: .normal)
-        } else if let image = self.image {
-            actionButton.setImage(image, for: .normal)
-        } else {
-            actionButton.setTitle("Untitled", for: .normal)
-        }
-        
+
         actionButton.heightAnchor.constraint(equalToConstant: StackViewRowHeightAnchorConstraint).isActive = true
         
-        if self.style == .Destructive {
-            actionButton.setTitleColor(UIColor.red, for: .normal)
-        } else {
-            if let controller = self.controller, controller.blurEffectsDisabled == false {
-                actionButton.setTitleColor(defaultSystemColor, for: .normal)
-            }
-        }
-        
-        return actionButton;
+        return actionButton
     }
     
     
@@ -205,16 +210,8 @@ public class GroupedActionSheetControllerAction: ActionSheetControllerAction {
         }
     }
     
-    private func loadView() -> UIView {
+    override fileprivate func loadView() -> UIView {
         guard let controller = self.controller else { fatalError("Controller not set when loading view on an GroupedActionSheetControllerAction") }
-        func contextAwareBackgroundColor() -> UIColor {
-            switch controller.style {
-            case .Light:
-                return controller.blurEffectsDisabled ? LightColor : TransparentLightColor
-            case .Dark:
-                return controller.blurEffectsDisabled ? DarkColor : TransparentDarkColor
-            }
-        }
         
         let stackView = UIStackView(frame: CGRect.zero)
         stackView.axis = .horizontal
