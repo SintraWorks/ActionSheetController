@@ -221,13 +221,13 @@ public class GroupedActionSheetControllerAction: ActionSheetControllerAction {
             let separatorView = UIView(frame: CGRect.zero)
             separatorView.backgroundColor = UIColor.darkGray
             separatorView.widthAnchor.constraint(equalToConstant: separatorViewWidth).isActive = true
-            separatorView.setContentHuggingPriority(UILayoutPriorityRequired, for: .horizontal)
+            separatorView.setContentHuggingPriority(UILayoutPriority.required, for: .horizontal)
             return separatorView
         }
         
         var precedingActionView: UIView? = nil
         for action in self.actions {
-            action.view.setContentHuggingPriority(UILayoutPriorityDefaultLow, for:.horizontal)
+            action.view.setContentHuggingPriority(UILayoutPriority.defaultLow, for:.horizontal)
             stackView.addArrangedSubview(action.view)
             if action !== self.actions.last {
                 stackView.addArrangedSubview(separatorView())
