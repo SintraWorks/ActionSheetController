@@ -130,7 +130,7 @@ extension TableViewDelegate {
             let alertInfo = AlertInfo(title: "Success", message: "You picked action 2", actions: [action])
             QueuedAlertPresenter.sharedAlertPresenter.addAlert(alertInfo)
         }
-
+        
         let action3 = ActionSheetControllerAction(style: .Additional, title: "Action 3", dismissesActionController: false) { controller in
             let action = AlertAction(title: "Allright already!", style: .default, enabled: true, isPreferredAction: true, handler: nil)
             let alertInfo = AlertInfo(title: "Success", message: "You picked action 3", actions: [action])
@@ -140,7 +140,7 @@ extension TableViewDelegate {
         let groupedAction = GroupedActionSheetControllerAction(style: .Additional, actions: [action1, action2, action3])
         sheetController.add(action: groupedAction)
 
-        let action4 = ActionSheetControllerAction(style: .Destructive, title: "Alert Gun", dismissesActionController: false) { controller in
+        let action4 = ActionSheetControllerAction(style: .Additional, title: "Alert Gun", image: UIImage(named: "globe_earth"), dismissesActionController: false) { controller in
             for i in 1...5 {
                 let action = AlertAction(title: (i == 5) ? "Stop it!" : String(i), style: .default, enabled: true, isPreferredAction: false, handler: nil)
                 let alertInfo = AlertInfo(title: "Success", message: "You engaged the alert gun. This is alert number \(String(i)).", actions: [action])
@@ -148,6 +148,19 @@ extension TableViewDelegate {
             }
         }
         sheetController.add(action: action4)
+        
+        if let action4Button = action4.view as? UIButton {
+            action4Button.contentHorizontalAlignment = .left
+            action4Button.titleEdgeInsets = UIEdgeInsets(top: 0, left: 30, bottom: 0, right: 15)
+            action4Button.imageEdgeInsets = UIEdgeInsets(top: 0, left: 15, bottom: 0, right: 15)
+        }
+
+        let action5 = ActionSheetControllerAction(style: .Destructive, title: "Delete something", dismissesActionController: false) { controller in
+            let action = AlertAction(title: "OK", style: .default, enabled: true, isPreferredAction: true, handler: nil)
+            let alertInfo = AlertInfo(title: "Not really…", message: "You tapped a fake delete action", actions: [action])
+            QueuedAlertPresenter.sharedAlertPresenter.addAlert(alertInfo)
+        }
+        sheetController.add(action: action5)
 
         let label = UILabel(frame: CGRect.zero)//CustomGrayView(frame: CGRectZero)
         sheetController.contentView = label

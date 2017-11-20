@@ -89,7 +89,7 @@ public class ActionSheetControllerAction {
     }
     
     
-    lazy var view: UIView = {
+    public lazy var view: UIView = {
         return self.loadView()
     }()
     
@@ -101,10 +101,10 @@ public class ActionSheetControllerAction {
         
         if let title = self.title {
             actionButton.setTitle(title, for: .normal)
-        } else if let image = self.image {
+        }
+        
+        if let image = self.image {
             actionButton.setImage(image, for: .normal)
-        } else {
-            actionButton.setTitle("Untitled", for: .normal)
         }
         
         if self.style == .Destructive {
