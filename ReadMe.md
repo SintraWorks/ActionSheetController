@@ -14,7 +14,7 @@ Usage
 ====
 By default ActionSheetController doesn't contain a content view, and will only show buttons for any actions you add. To show a content view you simply set the contentView property to hold the desired view. There is generally no need to subclass ActionSheetController, although you can if you want to.
 
-###Adding a view
+### Adding a view
 Lets say you want to add a date picker:
 - You instantiate a UIDatePicker
 - You instantiate an action and consult the date picker in its handler, to extract the selected date.
@@ -41,7 +41,7 @@ private func datePickerSheet() -> ActionSheetController {
         return sheetController
     }
 ```
-###Presenting
+### Presenting
 Presenting the controller is pretty standard:
 
 ```swift
@@ -49,13 +49,13 @@ Presenting the controller is pretty standard:
         self.controller.presentViewController(sheetController, animated: true, completion: nil)
 ```
 
-###Presentation Style
+### Presentation Style
 ActionSheetController can be presented as a popover on iPad, and it has a light and a dark theme, suitable for different context, and/or personal preference.
 
-###Integration
+### Integration
 To use ActionSheetController simply drag the files ActionSheetController.swift and ActionSheetControllerAction.swift into your project.
 
-###Requirements
+### Requirements
 
 | Compile Time  | Runtime       |
 | :------------ | :------------ |
