@@ -27,14 +27,12 @@ import UIKit
 
 
 enum RowIdentifier: Int {
-    case customView, blackCustomView, datePickerView, transparentBackground, noBackgroundTaps, groupedActions, groupedActionsBlack, viewController
+    case customView, datePickerView, transparentBackground, noBackgroundTaps, groupedActions, viewController
     
     func description() -> String {
         switch self {
         case .customView:
             return "Custom View"
-        case .blackCustomView:
-            return "Custom View, Black"
         case .datePickerView:
             return "Date Picker View"
         case .transparentBackground:
@@ -43,8 +41,6 @@ enum RowIdentifier: Int {
             return "No Background Taps View"
         case .groupedActions:
             return "Grouped Actions View"
-        case .groupedActionsBlack:
-            return "Grouped Actions View Black"
         case .viewController:
             return "Custom View Controller"
         }
@@ -55,23 +51,22 @@ enum RowIdentifier: Int {
 }
 
 
-class TableViewDataSource: NSObject {
-    func numberOfSectionsInTableView(_ tableView: UITableView) -> Int {
+class TableViewDataSource: NSObject, UITableViewDataSource {
+	func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
-    
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return RowIdentifier.count
     }
     
-    
-    func tableView(_ tableView: UITableView, cellForRowAtIndexPath indexPath: IndexPath) -> UITableViewCell {
+	func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         guard let cell = tableView.dequeueReusableCell(withIdentifier: "Cell") else { return UITableViewCell(style: .default, reuseIdentifier: "Cell") }
         guard let item = RowIdentifier(rawValue: (indexPath as NSIndexPath).row) else { fatalError("Illegal row index") }
         
         cell.textLabel?.text = item.description()
-        
+        cell.imageView?.image = UIImage(systemName: "star.fill")
+        cell.contentView.backgroundColor = UIColor.blue.withAlphaComponent(0.25)
         return cell
     }
 }

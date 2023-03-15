@@ -29,6 +29,8 @@ class ViewController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+
+        title = "Menu"
         
         var frame = self.tableView.bounds
         frame.size.height = 20.0

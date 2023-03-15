@@ -31,13 +31,13 @@ import UIKit
 
 public enum ActionSheetControllerActionStyle: Int {
     /// The button is displayed with a regular font and positioned right below the content view.
-    case Done
+    case done
     /// The button is displayed with a bold font and positioned below all done buttons (or the content view if there are no done buttons).
-    case Cancel
+    case cancel
     /// The button is displayed with a standard font and positioned right below the content view. Currently only supported when blur effects are disabled.
-    case Destructive
+    case destructive
     /// The button is displayed with a regular font and positioned above the content view.
-    case Additional
+    case additional
 }
 
 // MARK: - Individual Actions
@@ -54,7 +54,7 @@ public class ActionSheetControllerAction {
     /// The action's image. It will not be shown if the action also has a title.
     public var image: UIImage?
     /// The action's style
-    var style: ActionSheetControllerActionStyle = .Done
+    var style: ActionSheetControllerActionStyle = .done
     /// Controls whether the action dismisses the controller when selected.
     var dismissesActionController: Bool = false
     /// An optional closure containing the code to perform when the action is selected
@@ -65,7 +65,7 @@ public class ActionSheetControllerAction {
     /// Provide at least a title or an image. (But not both. The title overrides the image.)
     /// If you want the action to dismiss the controller when clicked set dismissesActionController to true.
     ///
-    public init(style: ActionSheetControllerActionStyle = .Done, title: String? = nil, image: UIImage? = nil, dismissesActionController: Bool = false, handler:ActionSheetControllerActionHandler? = nil) {
+    public init(style: ActionSheetControllerActionStyle = .done, title: String? = nil, image: UIImage? = nil, dismissesActionController: Bool = false, handler:ActionSheetControllerActionHandler? = nil) {
         self.style = style
         self.title = title
         self.image = image
@@ -107,7 +107,7 @@ public class ActionSheetControllerAction {
             actionButton.setImage(image, for: .normal)
         }
         
-        if self.style == .Destructive {
+        if self.style == .destructive {
             actionButton.setTitleColor(UIColor.red, for: .normal)
         } else {
             let defaultSystemColor = UIButton(type: .system).titleLabel?.textColor
@@ -120,22 +120,13 @@ public class ActionSheetControllerAction {
     }
     
     private func button(for controller: ActionSheetController) -> UIButton {
-        func contextAwareBackgroundColor() -> UIColor {
-            switch controller.style {
-            case .Light:
-                return controller.blurEffectsDisabled ? LightColor : TransparentLightColor
-            case .Dark:
-                return controller.blurEffectsDisabled ? DarkColor : TransparentDarkColor
-            }
-        }
-
         let actionButton = UIButton(type: controller.blurEffectsDisabled ? .system : .custom)
         actionButton.translatesAutoresizingMaskIntoConstraints = false
-        actionButton.backgroundColor = contextAwareBackgroundColor()
+        actionButton.backgroundColor = controller.contextAwareBackgroundColor
 
         actionButton.addTarget(self, action: #selector(ActionSheetControllerAction.viewTapped), for: .touchUpInside)
         
-        if self.style == .Cancel {
+        if self.style == .cancel {
             actionButton.titleLabel?.font = UIFont.boldSystemFont(ofSize: UIFont.buttonFontSize)
         } else {
             actionButton.titleLabel?.font = UIFont.systemFont(ofSize: UIFont.buttonFontSize)
@@ -145,18 +136,18 @@ public class ActionSheetControllerAction {
             if !controller.blurEffectsDisabled {
                 actionButton.setBackgroundImage(self.imageWithColor(color: UIColor(white: 1.0, alpha: 0.3)), for: .highlighted)
             } else {
-                switch controller.style {
-                case .Light:
-                    actionButton.setBackgroundImage(self.imageWithColor(color: UIColor(white: 0.9, alpha: 1.0)), for: .highlighted)
-                    break;
-                case .Dark:
-                    actionButton.setBackgroundImage(self.imageWithColor(color: UIColor(white: 0.2, alpha: 1.0)), for: .highlighted)
-                    break;
+                switch controller.userInterfaceStyle {
+                    case .dark:
+                        actionButton.setBackgroundImage(self.imageWithColor(color: UIColor(white: 0.2, alpha: 1.0)), for: .highlighted)
+                    case .light:
+                        fallthrough
+                    default:
+                        actionButton.setBackgroundImage(self.imageWithColor(color: UIColor(white: 0.9, alpha: 1.0)), for: .highlighted)
                 }
             }
         }
 
-        actionButton.heightAnchor.constraint(equalToConstant: StackViewRowHeightAnchorConstraint).isActive = true
+        actionButton.heightAnchor.constraint(equalToConstant: ActionSheetController.stackViewRowHeightAnchorConstraint).isActive = true
         
         return actionButton
     }
@@ -211,7 +202,7 @@ public class GroupedActionSheetControllerAction: ActionSheetControllerAction {
     }
     
     override fileprivate func loadView() -> UIView {
-        guard let controller = self.controller else { fatalError("Controller not set when loading view on an GroupedActionSheetControllerAction") }
+        guard self.controller != nil else { fatalError("Controller not set when loading view on an GroupedActionSheetControllerAction") }
         
         let stackView = UIStackView(frame: CGRect.zero)
         stackView.axis = .horizontal

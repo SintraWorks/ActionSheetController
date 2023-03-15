@@ -25,6 +25,8 @@ class ActionControllerAnimationController: NSObject, UIViewControllerAnimatedTra
         
         if self.animationStyle == .presenting {
             guard let actionController = transitionContext.viewController(forKey: UITransitionContextViewControllerKey.to) as? ActionSheetController else { return }
+
+            actionController.view.backgroundColor = .clear
             
             let effectView = actionController.backgroundView
             let mainView = actionController.view!
@@ -38,10 +40,12 @@ class ActionControllerAnimationController: NSObject, UIViewControllerAnimatedTra
             //                    }
             
             containerView.addSubview(effectView)
-            effectView.leftAnchor.constraint(equalTo: containerView.leftAnchor).isActive = true
-            effectView.rightAnchor.constraint(equalTo: containerView.rightAnchor).isActive = true
-            effectView.heightAnchor.constraint(equalTo: containerView.heightAnchor).isActive = true
-            effectView.topAnchor.constraint(equalTo: containerView.topAnchor).isActive = true
+			NSLayoutConstraint.activate([
+				effectView.leftAnchor.constraint(equalTo: containerView.leftAnchor),
+				effectView.rightAnchor.constraint(equalTo: containerView.rightAnchor),
+				effectView.heightAnchor.constraint(equalTo: containerView.heightAnchor),
+				effectView.topAnchor.constraint(equalTo: containerView.topAnchor)
+			])
             containerView.setNeedsUpdateConstraints()
             containerView.layoutIfNeeded()
             
@@ -50,7 +54,12 @@ class ActionControllerAnimationController: NSObject, UIViewControllerAnimatedTra
             } else {
                 effectView.addSubview(mainView)
             }
-            
+
+            NSLayoutConstraint.activate([
+                mainView.leftAnchor.constraint(equalTo: effectView.safeAreaLayoutGuide.leftAnchor),
+                mainView.rightAnchor.constraint(equalTo: effectView.safeAreaLayoutGuide.rightAnchor),
+            ])
+
             mainView.centerXAnchor.constraint(equalTo: effectView.centerXAnchor).isActive = true
             mainView.widthAnchor.constraint(equalTo: effectView.widthAnchor).isActive = true
             mainView.heightAnchor.constraint(equalTo: effectView.heightAnchor).isActive = true
