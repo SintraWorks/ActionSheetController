@@ -25,42 +25,28 @@
 
 import UIKit
 
-internal let LightColor = UIColor.white
-internal let TransparentLightColor = UIColor.white.withAlphaComponent(0.75)
-internal let DarkColor = UIColor.black
-internal let TransparentDarkColor = UIColor.black.withAlphaComponent(0.75)
-internal let UnblurredBackgroundColorForLightStyle = DarkColor.withAlphaComponent(0.2)
-internal let UnblurredBackgroundColorForDarkStyle = LightColor.withAlphaComponent(0.2)
-internal let ClearColor = UIColor.clear
-internal let StackViewRowHeightAnchorConstraint: CGFloat = 44.0
-
-
 // MARK: - Controller
 
 /// The controller style determines the overall theme of the controller. Either White or Black.
-
-public enum ActionSheetControllerStyle: Int {
-    /// The light theme, with a light background.
-    case Light
-    /// The dark theme, with a dark background.
-    case Dark
-}
 
 
 /// iOS control for presenting a view in a style reminiscent of an action sheet/alert.
 /// You can add a custom view, and any number of buttons to represent and handle actions.
 public class ActionSheetController: UIViewController, UIViewControllerTransitioningDelegate {
-    private let interStackViewheightAnchorConstraint: CGFloat = 16.0
+    static var stackViewRowHeightAnchorConstraint: CGFloat = 44.0
+
+    static private let interStackViewheightAnchorConstraint: CGFloat = 16.0
+
     private var cornerRadius: CGFloat {
         get {
             return (UIDevice.current.userInterfaceIdiom == .pad) ? 8.0 : 4.0
         }
     }
-    
-    private(set) var style: ActionSheetControllerStyle = .Light
-    
+
     /// The message shown in the header of the controller.
     public var message: String?
+
+    public var blurEffectStyle: UIBlurEffect.Style = .regular
     
     /// Whether to disable background taps. When true, tapping outside the controller has no effect.
     /// When false, tapping outside the controller dismisses the controller without triggering any actions.
@@ -71,25 +57,28 @@ public class ActionSheetController: UIViewController, UIViewControllerTransition
     var cancelActions: [ActionSheetControllerAction] = []
     
     var animationConstraint: NSLayoutConstraint?
+
+    internal var userInterfaceStyle: UIUserInterfaceStyle {
+        self.traitCollection.userInterfaceStyle
+    }
     
     lazy internal var backgroundView: UIView = {
-        var backgroundView: UIView? = nil
+        let backgroundView: UIView
         if self.blurEffectsDisabled {
             backgroundView = UIView(frame: CGRect.zero)
-            backgroundView?.backgroundColor = self.style == .Light ?  UnblurredBackgroundColorForLightStyle : UnblurredBackgroundColorForDarkStyle
+            backgroundView.backgroundColor = UIColor.systemGroupedBackground.withAlphaComponent(0.2)
         } else {
             // Note that on older hardware the blur effect may not render correctly (although still acceptably).
-            let effect = UIBlurEffect(style: self.backgroundBlurEffectStyleForCurrentStyle)
+            let effect = UIBlurEffect(style: blurEffectStyle)
             backgroundView = UIVisualEffectView(effect: effect)
         }
         
-        guard let resultView = backgroundView else { fatalError("Could not create backgroundView") }
-        resultView.translatesAutoresizingMaskIntoConstraints = false
+        backgroundView.translatesAutoresizingMaskIntoConstraints = false
         
         let tapRecognizer = UITapGestureRecognizer(target: self, action: #selector(ActionSheetController.backgroundViewTapped))
-        resultView.addGestureRecognizer(tapRecognizer)
+        backgroundView.addGestureRecognizer(tapRecognizer)
         
-        return resultView
+        return backgroundView
     }()
     
     /// Returns the outer stack view that will hold the inner stackviews adn separator view as appropriate.
@@ -114,18 +103,18 @@ public class ActionSheetController: UIViewController, UIViewControllerTransition
     /// Returns a UIView to be used as a separator row between the top and bottom stack views.
     private func interStackViewSeparatorView() -> UIView {
         let emptyView = UIView(frame: CGRect.zero)
-        emptyView.backgroundColor = ClearColor
-        emptyView.heightAnchor.constraint(equalToConstant: self.interStackViewheightAnchorConstraint).isActive = true
+        emptyView.backgroundColor = .clear
+        emptyView.heightAnchor.constraint(equalToConstant: Self.interStackViewheightAnchorConstraint).isActive = true
         return emptyView
     }
     
-    /// Returns a UILabel with the majority of settings preapared for use in this controller. Only the font needs setting by the caller.
+    /// Returns a UILabel with the majority of settings prepared for use in this controller. Only the font needs setting by the caller.
     private func label(text: String) -> UILabel {
         let label = UILabel()
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = text
         label.textAlignment = .center
-        label.textColor = self.style == .Light ? UIColor.darkGray : UIColor.lightGray
+        label.textColor = UIColor.secondaryLabel
         label.backgroundColor = UIColor.clear
         label.numberOfLines = 0
         return label
@@ -149,56 +138,40 @@ public class ActionSheetController: UIViewController, UIViewControllerTransition
         roundedCornerContainerView.backgroundColor = self.contextAwareBackgroundColor
         
         roundedCornerContainerView.addSubview(view)
-        view.leftAnchor.constraint(equalTo: roundedCornerContainerView.leftAnchor).isActive = true
-        view.topAnchor.constraint(equalTo: roundedCornerContainerView.topAnchor).isActive = true
-        view.rightAnchor.constraint(equalTo: roundedCornerContainerView.rightAnchor).isActive = true
-        view.bottomAnchor.constraint(equalTo: roundedCornerContainerView.bottomAnchor).isActive = true
-        
+		NSLayoutConstraint.activate([
+			view.leftAnchor.constraint(equalTo: roundedCornerContainerView.leftAnchor),
+			view.topAnchor.constraint(equalTo: roundedCornerContainerView.topAnchor),
+			view.rightAnchor.constraint(equalTo: roundedCornerContainerView.rightAnchor),
+			view.bottomAnchor.constraint(equalTo: roundedCornerContainerView.bottomAnchor)
+		])
+
         return roundedCornerContainerView
     }
-    
-    private var contextAwareLightColor: UIColor {
-        return self.blurEffectsDisabled ? LightColor : TransparentLightColor
-    }
-    
-    private var contextAwareDarkColor: UIColor {
-        return self.blurEffectsDisabled ? DarkColor : TransparentDarkColor
-    }
-    
-    private var contextAwareBackgroundColor: UIColor {
-        switch self.style {
-        case .Light:
-            return self.contextAwareLightColor
-        case .Dark:
-            return self.contextAwareDarkColor
-        }
+
+    internal var contextAwareBackgroundColor: UIColor {
+        return self.blurEffectsDisabled ? .systemGroupedBackground : UIColor.systemGroupedBackground.withAlphaComponent(0.5)
     }
     
     /// Whether blur effects are disabled or not.
     public var disableBlurEffects: Bool = false
     public var blurEffectsDisabled: Bool {
         get {
-            if UIAccessibilityIsReduceTransparencyEnabled() {
+            if UIAccessibility.isReduceTransparencyEnabled {
                 return true
             }
             return disableBlurEffects
         }
     }
     
-    private var backgroundBlurEffectStyleForCurrentStyle: UIBlurEffectStyle {
-        switch (self.style) {
-        case .Light:
-            return .dark
-        case .Dark:
-            return .light;
-        }
+    private var backgroundBlurEffectStyleForCurrentStyle: UIBlurEffect.Style {
+        self.traitCollection.userInterfaceStyle == .dark ? .dark : .light
     }
     
     public var disableBouncingEffects: Bool = false
     /// Set to true to disable bouncing when showing the controller.
     public var bouncingEffectsDisabled: Bool {
         get {
-            if UIAccessibilityIsReduceMotionEnabled() {
+            if UIAccessibility.isReduceMotionEnabled {
                 return true
             }
             
@@ -222,9 +195,9 @@ public class ActionSheetController: UIViewController, UIViewControllerTransition
     /// - Parameter message: The message shown in the controller's header.
     /// - Parameter cancelAction: A action appropriately configured for cancelling abd dismissing the controller.
     /// - Parameter okAction: A action appropriately configured for actioning on and dismissing the controller.
-    public init(style: ActionSheetControllerStyle = .Light, title: String?, message: String?, cancelAction: ActionSheetControllerAction? = nil, okAction: ActionSheetControllerAction? = nil) {
+    public init(title: String?, message: String?, cancelAction: ActionSheetControllerAction? = nil, okAction: ActionSheetControllerAction? = nil) {
         super.init(nibName: nil, bundle: nil)
-        self.style = style
+
         self.title = title
         self.message = message
         if let cancelAction = cancelAction {
@@ -235,7 +208,6 @@ public class ActionSheetController: UIViewController, UIViewControllerTransition
         }
         self.setup()
     }
-    
     
     /// Initializer when loaded from nib.
     override init(nibName nibNameOrNil: String?, bundle nibBundleOrNil: Bundle?) {
@@ -293,8 +265,12 @@ public class ActionSheetController: UIViewController, UIViewControllerTransition
         self.view.addSubview(outerStackView)
         outerStackView.centerXAnchor.constraint(equalTo: self.view.centerXAnchor).isActive = true
         outerStackView.widthAnchor.constraint(equalTo: self.view.widthAnchor, constant: -20.0).isActive = true
-        outerStackView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -8.0).isActive = true
-    }
+		if #available(iOS 11.0, *) {
+			outerStackView.bottomAnchor.constraint(equalTo: self.view.safeAreaLayoutGuide.bottomAnchor, constant: -8.0).isActive = true
+		} else {
+			outerStackView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -8.0).isActive = true
+		}
+	}
     
     private func setupTopStackView() {
         if self.title != nil || self.message != nil {
@@ -369,13 +345,13 @@ public class ActionSheetController: UIViewController, UIViewControllerTransition
     /// Used to add actions, beyond the Cancel and OK actions that can be added in the initializer.
     public func add(action: ActionSheetControllerAction) {
         switch action.style {
-        case .Additional:
+        case .additional:
             self.additionalActions.append(action)
-        case .Done:
+        case .done:
             self.doneActions.append(action)
-        case .Cancel:
+        case .cancel:
             self.cancelActions.append(action)
-        case .Destructive:
+        case .destructive:
             self.doneActions.append(action)
         }
         

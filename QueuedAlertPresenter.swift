@@ -33,7 +33,7 @@ public typealias AlertActionHandler = () -> ()
  */
 public struct AlertAction {
     var title: String
-    var style: UIAlertActionStyle
+    var style: UIAlertAction.Style
     var handler: AlertActionHandler?
     var enabled: Bool
     var isPreferredAction: Bool
@@ -45,7 +45,7 @@ public struct AlertAction {
      - isPreferredAction: Whether the action is the preferred action of the alert. Defaults to false.
      - handler: Optional closure containing code to execute when the action is clicked.
      */
-    public init(title: String = "", style: UIAlertActionStyle = .default, enabled: Bool = true, isPreferredAction: Bool = false, handler: AlertActionHandler? = nil) {
+    public init(title: String = "", style: UIAlertAction.Style = .default, enabled: Bool = true, isPreferredAction: Bool = false, handler: AlertActionHandler? = nil) {
         self.title = title
         self.style = style
         self.enabled = enabled
@@ -61,7 +61,7 @@ public struct AlertAction {
 public struct AlertInfo {
     var title: String?
     var message: String?
-    var style: UIAlertControllerStyle
+    var style: UIAlertController.Style
     var actions: [AlertAction]?
     
     /**
@@ -71,7 +71,7 @@ public struct AlertInfo {
      - style: Alert style (UIAlertControllerStyle). Defaults to .Alert
      - actions: Optional array of AlertActions. Defaults to nil.
      */
-    public init(title: String? = "", message: String? = "", style: UIAlertControllerStyle = .alert, actions: [AlertAction]? = nil) {
+    public init(title: String? = "", message: String? = "", style: UIAlertController.Style = .alert, actions: [AlertAction]? = nil) {
         self.title = title
         self.message = message
         self.style = style
@@ -89,7 +89,7 @@ public struct AlertInfo {
  AlertInfo holds the information for an individual alert you want to present.
  */
 open class QueuedAlertPresenter {
-    open static let sharedAlertPresenter = QueuedAlertPresenter()
+    public static let sharedAlertPresenter = QueuedAlertPresenter()
     
     fileprivate var queuedAlerts = [AlertInfo]()
     fileprivate var presentedAlert: AlertInfo?
@@ -151,7 +151,9 @@ open class QueuedAlertPresenter {
     
     // Ensure we present on a view controller that is neither being dismissed, nor presenting another view controller.
     fileprivate var validViewControllerForPresentation: UIViewController {
-        guard let rootViewController = UIApplication.shared.keyWindow?.rootViewController else { fatalError("There is no root view controller on the key window") }
+        guard
+            let keyWindow = UIApplication.shared.windows.first(where: { $0.isKeyWindow }),
+            let rootViewController = keyWindow.rootViewController else { fatalError("There is no root view controller on the key window") }
         var validController = UIViewController.topViewControllerForViewController(rootViewController)
         
         while validController.isBeingDismissed {
